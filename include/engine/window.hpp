@@ -6,9 +6,11 @@
 #include "include/engine/defines.hpp"
 
 class Window {
+    private:
+        GLFWwindow *window;
     public:
         Window(unsigned int width = WIDTH, unsigned int height = HEIGHT);
         ~Window();
-    private:
-        GLFWwindow *window;
+
+        inline bool is_alive() { return !glfwWindowShouldClose(window); };
 };

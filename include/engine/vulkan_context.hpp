@@ -5,12 +5,12 @@
 
 class VulkanContext {
     public:
-        VulkanContext() = default;
-        ~VulkanContext() = default;
+        VulkanContext();
+        ~VulkanContext();
 
     private:
         void init_vulkan();
-        void pollMainLoop();
+        void poll_main_loop();
         void clean();
 
         Window window;
