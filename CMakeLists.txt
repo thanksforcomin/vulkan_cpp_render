@@ -5,7 +5,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_COMPILER /bin/clang++)
 set(CMAKE_C_COMPILER /bin/clang)
-set(CMAKE_C_FLAGS "-std=c++17 -O2")
 
 project(    pretzel
     DESCRIPTION "i have no idea what i'm doing"
@@ -19,6 +18,31 @@ add_executable(test ${SOURCES} ${HEADERS})
 
 find_package(Boost REQUIRED COMPONENTS system thread)
 if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
+    include_directories(PUBLIC ${Boost_INCLUDE_DIRS})
     target_link_libraries(test ${Boost_LIBRARIES})
+else()
+    message("no boost???")
 endif()
+
+find_package(Vulkan REQUIRED)
+if(Vulkan_FOUND)
+    include_directories(PUBLIC ${Vulkan_INCLUDE_DIRS})
+    target_link_libraries(test Vulkan::Vulkan)
+else()
+    message("no vulkan???")
+endif()
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+find_package(glfw3 REQUIRED)
+if(glfw3_FOUND)
+    target_link_libraries(test glfw)
+else()
+    message("no glfw???")
+endif()
+
+set(GLM_DIR "libs/glm")
+add_subdirectory(${GLM_DIR})
+target_link_libraries(test glm::glm)
