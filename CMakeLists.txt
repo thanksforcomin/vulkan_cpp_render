@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_COMPILER /bin/clang++)
 set(CMAKE_C_COMPILER /bin/clang)
 
@@ -28,7 +28,9 @@ else()
     endif()
 endif()
 
-set(ENV{VULKAN_SDK} "C:/VulkanSDK/1.3.239.0")
+if(WIN32)
+    set(ENV{VULKAN_SDK} "C:/VulkanSDK/1.3.239.0")
+endif()
 find_package(Vulkan REQUIRED)
 if(Vulkan_FOUND)
     message("vulkan found")
