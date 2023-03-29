@@ -1,16 +1,25 @@
 #include "include/engine/window.hpp"
 
-Window::Window(unsigned int width, unsigned int height) {
-    glfwInit();
+#include <stdexcept>
+#include <iostream>
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    window = glfwCreateWindow(width, height, "Vulkan", nullptr, nullptr);
-}
+GLFWwindow *engine::Window::window_ptr = nullptr;
 
-Window::~Window() {
-    glfwDestroyWindow(window);
+namespace engine {
+    Window::Window(const VkInstance &inst, unsigned int width, unsigned int height) {
+        glfwInit();
 
-    glfwTerminate();
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+        window_ptr = glfwCreateWindow(width, height, "Vulkan", nullptr, nullptr);
+        std::cout << "window created\n";
+    }
+
+    Window::~Window() {
+        glfwDestroyWindow(window_ptr);
+
+        glfwTerminate();
+    }
 }

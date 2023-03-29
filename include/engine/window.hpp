@@ -1,16 +1,17 @@
 #pragma once
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #include "include/engine/defines.hpp"
+#include "include/engine/details.hpp"
 
-class Window {
-    private:
-        GLFWwindow *window;
-    public:
-        Window(unsigned int width = WIDTH, unsigned int height = HEIGHT);
-        ~Window();
+namespace engine {
+    class Window {
+        public:
+            static GLFWwindow *window_ptr;
 
-        inline bool is_alive() { return !glfwWindowShouldClose(window); };
-};
+        public:
+            Window(const VkInstance &inst, unsigned int width = WIDTH, unsigned int height = HEIGHT);
+            ~Window();
+
+            inline bool is_alive() { return !glfwWindowShouldClose(window_ptr); };
+    };
+}
