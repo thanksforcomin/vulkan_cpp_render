@@ -22,9 +22,10 @@ namespace engine {
     }
 
     VulkanContext::~VulkanContext() {
-        //vkDestroySurfaceKHR(instance, Window::window_surface, nullptr);
-        vkDestroyDevice(device.logical, nullptr);
-        vkDestroyInstance(instance, nullptr);
+        //swap_chain.~SwapChain();
+        //vkDestroySurfaceKHR(instance, surface, nullptr);
+        //vkDestroyDevice(device.logical, nullptr);
+        //vkDestroyInstance(instance, nullptr);
     }
 
     VkInstance VulkanContext::init_vulkan() {

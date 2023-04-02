@@ -8,9 +8,11 @@
 
 #include "include/engine/defines.hpp"
 #include "include/engine/vulkan_context.hpp"
+#include "include/engine/shader_loader.hpp"
 
 #include <iostream>
 
 int main() {
+    engine::compile_shader("../res/shader.vert");
     engine::VulkanContext();
 }

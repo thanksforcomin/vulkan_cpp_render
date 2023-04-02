@@ -10,7 +10,7 @@
 
 namespace engine {
     SwapChain::SwapChain(VulkanContext *context) : vulkan_context(context) {
-        swap_chain_support_details details = context->query_swap_chain_support();
+        swap_chain_support_details details = vulkan_context->query_swap_chain_support();
         VkPresentModeKHR new_present_mode = choose_present_mode(details.present_modes);
         VkExtent2D new_extent = choose_extent(details.capabilities);
         VkSurfaceFormatKHR new_surface_format = choose_format(details.formats);
@@ -22,7 +22,7 @@ namespace engine {
 
         VkSwapchainCreateInfoKHR create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        create_info.surface = context->surface;
+        create_info.surface = vulkan_context->surface;
         create_info.minImageCount = desired_image_count;
         create_info.imageFormat = new_surface_format.format;
         create_info.imageColorSpace = new_surface_format.colorSpace;
@@ -30,7 +30,7 @@ namespace engine {
         create_info.imageArrayLayers = 1;
         create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        QueueFamilyIndicies indicies = context->find_queue_family(context->device.physical);
+        QueueFamilyIndicies indicies = vulkan_context->find_queue_family(vulkan_context->device.physical);
         uint32_t queue_family_indicies[] = {indicies.present_family.value(), indicies.graphics_family.value()};
         if(indicies.graphics_family != indicies.present_family) {
             create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -48,16 +48,26 @@ namespace engine {
         create_info.clipped = VK_TRUE;
         create_info.oldSwapchain = VK_NULL_HANDLE;
 
-        VkResult res = vkCreateSwapchainKHR(context->device.logical, &create_info, nullptr, &swap_chain);
+        VkResult res = vkCreateSwapchainKHR(vulkan_context->device.logical, &create_info, nullptr, &swap_chain);
         if (res != VK_SUCCESS) {
-            throw std::runtime_error("swap chain creation failed\n error code: " + res);
+            throw std::runtime_error("swap chain creation failed\n");
         } else {
             std::cout << "swap chain created\n";
         }
+
+        swap_chain_extent = new_extent;
+        swap_chain_image_format = new_surface_format.format;
+
+        //query_swap_chain_images();
+        //create_image_views();
     }
 
     SwapChain::~SwapChain() {
-        //vkDestroySwapchainKHR(dev, swap_chain, nullptr);
+        if(vulkan_context != nullptr && swap_chain != VK_NULL_HANDLE) {
+            vkDestroySwapchainKHR(vulkan_context->device.logical, swap_chain, nullptr);
+            std::cout << vulkan_context << "\n";
+        } else
+            std::cout << vulkan_context << "\n";
     }
 
     VkPresentModeKHR SwapChain::choose_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes) {
@@ -99,5 +109,38 @@ namespace engine {
         }
 
         return available_formats[0];
+    }
+
+    void SwapChain::query_swap_chain_images() {
+        uint32_t image_count;
+        vkGetSwapchainImagesKHR(vulkan_context->device.logical, swap_chain, &image_count, nullptr);
+        swap_chain_images.resize(image_count);
+        vkGetSwapchainImagesKHR(vulkan_context->device.logical, swap_chain, &image_count, swap_chain_images.data());
+    }
+
+    void SwapChain::create_image_views() {
+        swap_chain_image_views.resize(swap_chain_images.size());
+        for (int i = 0; i < swap_chain_images.size(); i++) {
+            VkImageViewCreateInfo create_info = {};
+            create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            create_info.image = swap_chain_images[i];
+            create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            create_info.format = swap_chain_image_format;
+
+            create_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+            create_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+            create_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+            create_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+            create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            create_info.subresourceRange.aspectMask = 0;
+            create_info.subresourceRange.levelCount = 1;
+            create_info.subresourceRange.baseArrayLayer = 0;
+            create_info.subresourceRange.baseMipLevel = 1;
+
+            if (vkCreateImageView(vulkan_context->device.logical, &create_info, nullptr, &swap_chain_image_views[i]) != VK_SUCCESS) {
+                throw std::runtime_error("cannot create image view");
+            };
+        }
     }
 }

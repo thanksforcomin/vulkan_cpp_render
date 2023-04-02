@@ -16,13 +16,19 @@ namespace engine {
 
         private:
             VkSwapchainKHR swap_chain;
-            std::vector<VkImage> swap_chain_images;
+            VkExtent2D swap_chain_extent;
+            VkFormat swap_chain_image_format;
 
-            const VulkanContext *vulkan_context; //context to which swap chain related to
+            //images and their views
+            std::vector<VkImage> swap_chain_images;
+            std::vector<VkImageView> swap_chain_image_views;
+
+            VulkanContext *vulkan_context; //context to which swap chain related to
 
             VkPresentModeKHR choose_present_mode(const std::vector<VkPresentModeKHR> &available_present_modes);
             VkExtent2D choose_extent(const VkSurfaceCapabilitiesKHR &capabilities);
             VkSurfaceFormatKHR choose_format(const std::vector<VkSurfaceFormatKHR> &available_formats);
-            uint32_t query_swap_chain_images();
+            void query_swap_chain_images();
+            void create_image_views();
     };
 }
