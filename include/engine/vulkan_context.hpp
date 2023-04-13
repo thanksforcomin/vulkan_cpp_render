@@ -14,6 +14,7 @@ namespace engine {
             static std::vector<const char*> required_device_extensions;
         public:
             friend class SwapChain;
+            friend class Shader;
 
             VulkanContext();
             ~VulkanContext();
@@ -42,11 +43,12 @@ namespace engine {
             //swap chain
             SwapChain swap_chain;
 
-            QueueFamilyIndicies find_queue_family(const VkPhysicalDevice &dev);
+            QueueFamilyIndicies find_queue_family(const VkPhysicalDevice &dev) const;
             swap_chain_support_details query_swap_chain_support(const VkPhysicalDevice &dev);
-            swap_chain_support_details query_swap_chain_support(); //for the default single device of the class
+            swap_chain_support_details query_swap_chain_support() const; //for the default single device of the class
             bool is_device_suitable(VkPhysicalDevice dev);
             bool device_extension_support(VkPhysicalDevice dev);
             std::vector<const char *> get_required_extensions();
+            void create_main_pipeline(Shader &vert_shader, Shader &frag_shader);
     };
 }

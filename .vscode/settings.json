@@ -1,8 +1,7 @@
 {
     "files.associations": {
+        "*.tcc": "cpp",
         "stdexcept": "cpp",
-        "iostream": "cpp",
-        "optional": "cpp",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -19,7 +18,6 @@
         "atomic": "cpp",
         "strstream": "cpp",
         "bit": "cpp",
-        "*.tcc": "cpp",
         "bitset": "cpp",
         "cfenv": "cpp",
         "chrono": "cpp",
@@ -45,6 +43,7 @@
         "memory": "cpp",
         "memory_resource": "cpp",
         "numeric": "cpp",
+        "optional": "cpp",
         "random": "cpp",
         "ratio": "cpp",
         "source_location": "cpp",
@@ -54,9 +53,11 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "fstream": "cpp",
+        "future": "cpp",
         "initializer_list": "cpp",
         "iomanip": "cpp",
         "iosfwd": "cpp",
+        "iostream": "cpp",
         "istream": "cpp",
         "limits": "cpp",
         "mutex": "cpp",
@@ -75,8 +76,6 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp",
-        "future": "cpp"
-    },
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+        "variant": "cpp"
+    }
 }

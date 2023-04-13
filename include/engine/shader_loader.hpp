@@ -17,7 +17,9 @@ namespace engine {
 #endif
 #ifdef __linux__
         pid_t ret;
-        std::string shader_name = filepath.substr(0, filepath.find_last_of(".")) + ".spv";
+        //../res/phong/shader.vert => ../res/phong/vert.spv
+        std::string shader_name = filepath.substr(0, filepath.find_last_of("/")+1) + filepath.substr(filepath.find_last_of(".")+1, filepath.size()) + ".spv";
+        std::cout << shader_name << "\n";
 
         switch(ret=fork()) {
             case -1: //error
@@ -33,7 +35,7 @@ namespace engine {
             }
 #endif
     }
-
+    /*
     void compile_shader_recursive(std::string directory) { //compile every file in directory
 #ifdef _WIN32
         throw std::runtime_error("fuck шindows");
@@ -42,5 +44,5 @@ namespace engine {
         for (const auto &item : std::filesystem::directory_iterator(directory))
                 compile_shader(item.path());
 #endif
-    }
+    }*/
 }

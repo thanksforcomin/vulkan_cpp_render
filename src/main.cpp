@@ -13,6 +13,6 @@
 #include <iostream>
 
 int main() {
-    engine::compile_shader("../res/shader.vert");
+    engine::compile_shader("../res/basic_shader/shader.vert");
     engine::VulkanContext();
 }
