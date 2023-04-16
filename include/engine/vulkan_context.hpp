@@ -29,6 +29,7 @@ namespace engine {
             VkQueue load_device_queue(const vulkan_device& dev, queue_families family = queue_families::GRAPHICS);
             VkInstance init_vulkan();
 
+        public: //i have no possible idea how to make it better
             //window first (we need extensions)
             Window window;
             //Vulkan instance second
@@ -36,19 +37,19 @@ namespace engine {
             //Surface then
             VkSurfaceKHR surface;
             // Physical and logical devices
-            vulkan_device device;
+            const vulkan_device device;
             //Queues 
-            VkQueue queue;
-            VkQueue present_queue;
+            const VkQueue queue;
+            const VkQueue present_queue;
             //swap chain
             SwapChain swap_chain;
 
+        private:
             QueueFamilyIndicies find_queue_family(const VkPhysicalDevice &dev) const;
             swap_chain_support_details query_swap_chain_support(const VkPhysicalDevice &dev);
             swap_chain_support_details query_swap_chain_support() const; //for the default single device of the class
             bool is_device_suitable(VkPhysicalDevice dev);
             bool device_extension_support(VkPhysicalDevice dev);
             std::vector<const char *> get_required_extensions();
-            void create_main_pipeline(Shader &vert_shader, Shader &frag_shader);
     };
 }

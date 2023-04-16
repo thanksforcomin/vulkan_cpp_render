@@ -6,7 +6,7 @@
 #include <filesystem>
 
 namespace engine {
-    Shader::Shader(std::string filepath, VulkanContext *context, VkShaderStageFlagBits shader_type = VK_SHADER_STAGE_ALL) : 
+    Shader::Shader(std::string filepath, VulkanContext *context, VkShaderStageFlagBits shader_type) : 
         vulkan_context(context),
         path(filepath), 
         type(shader_type),

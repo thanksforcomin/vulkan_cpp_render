@@ -9,10 +9,12 @@
 #include "include/engine/defines.hpp"
 #include "include/engine/vulkan_context.hpp"
 #include "include/engine/shader_loader.hpp"
+#include "include/engine/pipeline.hpp"
 
 #include <iostream>
 
 int main() {
     engine::compile_shader("../res/basic_shader/shader.vert");
-    engine::VulkanContext();
+    engine::VulkanContext context();
+    //engine::Pipeline pipeline(&context);
 }
