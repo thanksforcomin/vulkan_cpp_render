@@ -6,6 +6,14 @@
     #define WIDTH 720
 #endif
 
+#ifndef MAX_FRAMES_IN_FLIGHT
+    #define MAX_FRAMES_IN_FLIGHT 2
+#endif
+
+#ifndef DEFAULT_THREAD_POOL
+    #define DEFAULT_THREAD_POOL 100
+#endif
+
 #ifndef APP_NAME
     #define APP_NAME "testing"
 #endif

@@ -17,7 +17,8 @@ namespace engine {
         device(load_device()),
         queue(load_device_queue(device, queue_families::GRAPHICS)),
         present_queue(load_device_queue(device, queue_families::PRESENT)),
-        swap_chain(this)
+        swap_chain(this),
+        render_pass(init_render_pass())
     {   
         std::cout << "new vulkan context\n";
         poll_main_loop();

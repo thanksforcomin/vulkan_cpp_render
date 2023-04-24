@@ -5,6 +5,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
 
+#include <vulkan/vulkan.hpp> //cpp style vulkan here
+
+#include <stdexcept>
 #include <vector>
 #include <optional>
 
@@ -41,6 +44,20 @@ namespace engine {
 
     enum class queue_families {
         GRAPHICS, PRESENT
+    };
+
+    //functions
+    VkFormat find_supported_format(std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags flags, vulkan_device device){
+        for(auto& format : candidates) {
+            VkFormatProperties properties;
+            vkGetPhysicalDeviceFormatProperties(device.physical, format, &properties);
+
+            if(tiling == VK_IMAGE_TILING_LINEAR && (properties.linearTilingFeatures & flags) == flags)
+                return format;
+            if(tiling == VK_IMAGE_TILING_OPTIMAL && (properties.linearTilingFeatures & flags) == flags)
+                return format;
+        }
+        throw std::runtime_error("unable to find supported format");
     };
 
     //vertex stuff

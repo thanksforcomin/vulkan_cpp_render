@@ -16,4 +16,21 @@ namespace engine {
             VulkanContext *context;
             VkPipelineLayout pipeline_layout;
     };
+
+    class RenderPass {
+        public:
+            RenderPass() = delete;
+            RenderPass();
+
+            void init();
+
+        private:
+            VulkanContext *context;
+    };
+
+    struct Frame
+    {
+            VkFence fence;
+            VkSemaphore semaphore;
+    };
 }

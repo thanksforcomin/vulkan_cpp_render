@@ -1,9 +1,9 @@
 #pragma once
 
-#define boid void //i was bored
+#define boid void
 
 #include "include/engine/details.hpp"
-//here will be vertex buffers and uniform buffers.
+//here will be vertex buffers , framebuffers, uniform buffers and stuff related to them specifically 
 //the reason i placed all them here is because i find them kinda same.
 //and the index buffer will be here too
 
@@ -26,7 +26,18 @@ namespace engine {
     class IndexBuffer {
     };
 
-    class DescriptorSetLayout {
+    class Framebuffer {
+        public:
+            Framebuffer(uint32_t count, VulkanContext *vulkan_context, VkImageView *attachment = nullptr);
+            ~Framebuffer();
+
+            VkFramebuffer data;
+        private:
+            VulkanContext *context;
+    };
+
+    class DescriptorSetLayout
+    {
         public:
             DescriptorSetLayout(VulkanContext *vulkan_context);
             ~DescriptorSetLayout();
@@ -41,5 +52,13 @@ namespace engine {
             std::vector<VkDescriptorSetLayoutBinding> layout_binding_descriptors;
             VkDescriptorSetLayout layout;
             VulkanContext *context;
+    };
+
+    class DescriptorPool {
+        public:
+            DescriptorPool();
+            ~DescriptorPool();
+        private:
+            VkDescriptorPool pool;
     };
 }

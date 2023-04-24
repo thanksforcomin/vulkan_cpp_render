@@ -28,6 +28,7 @@ namespace engine {
             vulkan_device load_device();
             VkQueue load_device_queue(const vulkan_device& dev, queue_families family = queue_families::GRAPHICS);
             VkInstance init_vulkan();
+            VkRenderPass init_render_pass();
 
         public: //i have no possible idea how to make it better
             //window first (we need extensions)
@@ -41,8 +42,10 @@ namespace engine {
             //Queues 
             const VkQueue queue;
             const VkQueue present_queue;
-            //swap chain
+            // swap chain
             SwapChain swap_chain;
+            //render pass
+            VkRenderPass render_pass;
 
         private:
             QueueFamilyIndicies find_queue_family(const VkPhysicalDevice &dev) const;
