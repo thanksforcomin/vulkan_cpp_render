@@ -5,7 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
 
-#include <vulkan/vulkan.hpp> //cpp style vulkan here
+//#include <vulkan/vulkan.hpp> //cpp style vulkan here
+//it makes compilation slower and i use C style always anyway
 
 #include <stdexcept>
 #include <vector>
@@ -33,10 +34,6 @@ namespace engine {
         bool is_complete() { return (graphics_family.has_value() && present_family.has_value()); }
     };
 
-    struct pipeline_creation_info {
-        
-    };
-
     struct vulkan_device {
         VkPhysicalDevice physical;
         VkDevice logical;
@@ -47,7 +44,7 @@ namespace engine {
     };
 
     //functions
-    VkFormat find_supported_format(std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags flags, vulkan_device device){
+    /*VkFormat find_supported_format(std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags flags, vulkan_device device){
         for(auto& format : candidates) {
             VkFormatProperties properties;
             vkGetPhysicalDeviceFormatProperties(device.physical, format, &properties);
@@ -58,6 +55,19 @@ namespace engine {
                 return format;
         }
         throw std::runtime_error("unable to find supported format");
+    };*/
+
+    inline VkAttachmentDescription default_attachment(VkFormat format) {
+        VkAttachmentDescription color_attachment{};
+        color_attachment.format = format;
+        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        return color_attachment;
     };
 
     //vertex stuff

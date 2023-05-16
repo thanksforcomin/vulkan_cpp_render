@@ -58,8 +58,8 @@ namespace engine {
         swap_chain_extent = new_extent;
         swap_chain_image_format = new_surface_format.format;
 
-        //query_swap_chain_images();
-        //create_image_views();
+        query_swap_chain_images();
+        create_image_views();
     }
 
     SwapChain::~SwapChain() {
@@ -141,6 +141,26 @@ namespace engine {
             if (vkCreateImageView(vulkan_context->device.logical, &create_info, nullptr, &swap_chain_image_views[i]) != VK_SUCCESS) {
                 throw std::runtime_error("cannot create image view");
             };
+        }
+    }
+
+    void SwapChain::create_framebuffers(RenderPass render_pass) {
+        swap_chain_framebuffers.reserve(swap_chain_image_views.size());
+        for (int i = 0; i < swap_chain_image_views.size(); i++)
+        {
+            VkFramebufferCreateInfo create_info{};
+            create_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            create_info.pNext = nullptr;
+            create_info.renderPass = render_pass.data;
+            create_info.attachmentCount = 1;
+            create_info.width = swap_chain_extent.width;
+            create_info.height = swap_chain_extent.height;
+            create_info.layers = 1;
+
+            for (int i = 0; i < swap_chain_image_views.size(); i++) {
+                create_info.pAttachments = &swap_chain_image_views[i];
+                swap_chain_framebuffers.push_back(Framebuffer(vulkan_context, create_info));
+            }
         }
     }
 }

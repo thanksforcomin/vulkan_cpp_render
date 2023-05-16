@@ -1,10 +1,11 @@
 #pragma once
+
+#ifndef __PIPELINE_H__
+#define __PIPELINE_H__
 #include "include/engine/details.hpp"
 #include "include/engine/shader.hpp"
 
 namespace engine {
-    class VulkanContext; //forward declaration
-
     class Pipeline {
         public:
             Pipeline(Shader &vert_shader, Shader &frag_shader, VulkanContext *vulkan_context);
@@ -13,24 +14,26 @@ namespace engine {
         private:
             void create_pipeline_layout(Shader &vert_shader, Shader &frag_shader);
 
-            VulkanContext *context;
+            const VulkanContext *context;
             VkPipelineLayout pipeline_layout;
     };
 
-    class RenderPass {
+    class Frame
+    {
         public:
-            RenderPass() = delete;
-            RenderPass();
+            VkFence fence;
+            VkSemaphore present_semaphore;
+            VkSemaphore graphics_semaphore;
 
-            void init();
+            //head command pool and head command buffer
+            VkCommandBuffer command_buffer;
+            VkCommandPool command_pool;
+
+            Frame(const VulkanContext *vulkan_context);
+            ~Frame();   
 
         private:
-            VulkanContext *context;
-    };
-
-    struct Frame
-    {
-            VkFence fence;
-            VkSemaphore semaphore;
+            const VulkanContext *context;
     };
 }
+#endif

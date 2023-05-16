@@ -1,10 +1,13 @@
 #pragma once
 
+#ifndef __SWAPCHAIN_H__
+#define __SWAPCHAIN_H__
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include "include/engine/details.hpp"
 #include "include/engine/window.hpp"
+#include "include/engine/framebuffer.hpp"
 
 namespace engine {
     class VulkanContext; // forward declaration
@@ -17,12 +20,15 @@ namespace engine {
             SwapChain(VulkanContext *context);
             ~SwapChain();
 
+            void create_framebuffers(RenderPass render_pass);
+
         private:
             VkSwapchainKHR swap_chain;
 
             //images and their views
             std::vector<VkImage> swap_chain_images;
             std::vector<VkImageView> swap_chain_image_views;
+            std::vector<Framebuffer> swap_chain_framebuffers;
 
             const VulkanContext *vulkan_context; //context to which swap chain related to
 
@@ -33,3 +39,4 @@ namespace engine {
             void create_image_views();
     };
 }
+#endif

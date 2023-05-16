@@ -1,6 +1,5 @@
 #pragma once
 
-#include "include/engine/details.hpp"
 #include "include/engine/vulkan_context.hpp"
 
 #include <string>

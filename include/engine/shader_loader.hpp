@@ -35,14 +35,4 @@ namespace engine {
             }
 #endif
     }
-    /*
-    void compile_shader_recursive(std::string directory) { //compile every file in directory
-#ifdef _WIN32
-        throw std::runtime_error("fuck шindows");
-#endif
-#ifdef __linux__
-        for (const auto &item : std::filesystem::directory_iterator(directory))
-                compile_shader(item.path());
-#endif
-    }*/
 }

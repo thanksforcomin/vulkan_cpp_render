@@ -17,18 +17,15 @@ namespace engine {
         device(load_device()),
         queue(load_device_queue(device, queue_families::GRAPHICS)),
         present_queue(load_device_queue(device, queue_families::PRESENT)),
-        swap_chain(this),
-        render_pass(init_render_pass())
+        swap_chain(this)
     {   
         std::cout << "new vulkan context\n";
-        poll_main_loop();
     }
 
     VulkanContext::~VulkanContext() {
-        //swap_chain.~SwapChain();
-        //vkDestroySurfaceKHR(instance, surface, nullptr);
-        //vkDestroyDevice(device.logical, nullptr);
-        //vkDestroyInstance(instance, nullptr);
+        vkDestroySurfaceKHR(instance, surface, nullptr);
+        vkDestroyDevice(device.logical, nullptr);
+        vkDestroyInstance(instance, nullptr);
     }
 
     VkInstance VulkanContext::init_vulkan() {
