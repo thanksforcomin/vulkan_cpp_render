@@ -2,10 +2,12 @@
 
 #ifndef __PIPELINE_H__
 #define __PIPELINE_H__
-#include "include/engine/details.hpp"
 #include "include/engine/shader.hpp"
+#include "include/engine/commands.hpp"
 
 namespace engine {
+    class VulkanContext; //forward decl
+
     class Pipeline {
         public:
             Pipeline(Shader &vert_shader, Shader &frag_shader, VulkanContext *vulkan_context);
@@ -26,11 +28,15 @@ namespace engine {
             VkSemaphore graphics_semaphore;
 
             //head command pool and head command buffer
-            VkCommandBuffer command_buffer;
-            VkCommandPool command_pool;
+            CommandDispatcher command_dispatcher;
 
             Frame(const VulkanContext *vulkan_context);
-            ~Frame();   
+            Frame(const Frame &fr);
+            Frame(Frame &&fr) = default;
+            ~Frame();
+
+            void wait_for_fence();
+            void reset_command_buffer();
 
         private:
             const VulkanContext *context;

@@ -144,7 +144,7 @@ namespace engine {
         }
     }
 
-    void SwapChain::create_framebuffers(RenderPass render_pass) {
+    void SwapChain::create_framebuffers(RenderPass &render_pass) {
         swap_chain_framebuffers.reserve(swap_chain_image_views.size());
         for (int i = 0; i < swap_chain_image_views.size(); i++)
         {
@@ -162,5 +162,16 @@ namespace engine {
                 swap_chain_framebuffers.push_back(Framebuffer(vulkan_context, create_info));
             }
         }
+    }
+
+    Framebuffer& SwapChain::query_framebuffer(uint32_t index) {
+        return swap_chain_framebuffers[index];
+    }
+
+    uint32_t SwapChain::query_next_image(VkSemaphore &semop) {
+        uint32_t img_index;
+        if(vkAcquireNextImageKHR(vulkan_context->device.logical, swap_chain, 1000000000, semop, nullptr, &img_index) != VK_SUCCESS)
+            throw std::runtime_error("failed to aquire next image index");
+        return img_index;
     }
 }

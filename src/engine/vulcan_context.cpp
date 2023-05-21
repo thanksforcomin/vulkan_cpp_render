@@ -61,12 +61,6 @@ namespace engine {
         return inst;
     }
 
-    void VulkanContext::poll_main_loop() {
-        while(window.is_alive()) {
-            glfwPollEvents();
-        }
-    }
-
     VkPhysicalDevice VulkanContext::load_phys_device() {
         unsigned int device_count = 0;
         vkEnumeratePhysicalDevices(instance, &device_count, nullptr);

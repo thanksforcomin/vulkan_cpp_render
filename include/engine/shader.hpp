@@ -1,6 +1,6 @@
 #pragma once
 
-#include "include/engine/vulkan_context.hpp"
+#include "include/engine/details.hpp"
 
 #include <string>
 #include <vector>
@@ -8,6 +8,8 @@
 /*one shader class is a set of information and data about one shader to be put inside a pipeline*/
 
 namespace engine {
+    class VulkanContext; //forward decl
+
     class Shader {
         private:
             const VkShaderStageFlagBits type;

@@ -4,20 +4,24 @@
 
 namespace engine {
     class VulkanContext; //forward decl
+    class RenderPass;
 
-    class CommandDiscpather {
+    class CommandDispatcher {
         public:
-            CommandDiscpather(const VulkanContext *vulkan_context);
-            ~CommandDiscpather();
+            CommandDispatcher(const VulkanContext *vulkan_context, VkCommandBufferLevel lvl = VK_COMMAND_BUFFER_LEVEL_SECONDARY);
+            CommandDispatcher(CommandDispatcher const& cmd) = default;
+            CommandDispatcher(CommandDispatcher &&cmd) = default;
+            ~CommandDispatcher();
 
-            void switch_frames();
             void reset();
-
-        private:
-            const VulkanContext *context;
+            void begin(const RenderPass &rp);
+            void end(const RenderPass &rp);
 
             VkCommandPool command_pool;
             VkCommandBuffer command_buffer;
             VkCommandBufferBeginInfo command_buffer_begin_info;
+
+        private:
+            const VulkanContext *context;
     };
 }

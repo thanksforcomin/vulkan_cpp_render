@@ -18,9 +18,14 @@ int main() {
     engine::compile_shader("../res/basic_shader/shader.vert");
     engine::VulkanContext context;
 
+    uint32_t curr_frame = 0;
+
     VkAttachmentDescription color_attachment = engine::default_attachment(context.swap_chain.swap_chain_image_format);
 
-    std::vector<engine::Frame> frames(2, &context);
+    std::vector<engine::Frame> frames{
+        engine::Frame(&context), 
+        engine::Frame(&context)
+    };
 
     VkClearValue clear_val{};
     clear_val.color = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -29,5 +34,23 @@ int main() {
     main_render_pass.init_default();
     context.swap_chain.create_framebuffers(main_render_pass);
 
-    context.poll_main_loop();
+    //main loop
+    while(context.window.is_alive()) {
+        engine::Frame &frame = frames[curr_frame++];
+
+        frame.wait_for_fence();
+
+        uint32_t swap_chain_image_index = context.swap_chain.query_next_image(frame.present_semaphore);
+        std::cout << curr_frame << "\n";
+        frame.command_dispatcher.reset();
+
+        main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index).data;
+
+        /*vkBeginCommandBuffer(frame.command_buffer, &frame.command_buffer_begin_info);
+        vkCmdBeginRenderPass(frame.command_buffer, &main_render_pass.begin_info, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdEndRenderPass(frame.command_buffer);
+        vkEndCommandBuffer(frame.command_buffer);*/
+
+        glfwPollEvents();
+    }
 }

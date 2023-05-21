@@ -1,4 +1,7 @@
 #include "include/engine/pipeline.hpp"
+#include "include/engine/vulkan_context.hpp"
+
+#include <iostream>
 
 namespace engine {
     Pipeline::Pipeline(Shader &vert_shader, Shader &frag_shader, VulkanContext *vulkan_context) : context(vulkan_context)
@@ -124,7 +127,7 @@ namespace engine {
 }
 
 namespace engine {
-    Frame::Frame(const VulkanContext *vulkan_context) : context(vulkan_context) {
+    Frame::Frame(const VulkanContext *vulkan_context) : context(vulkan_context), command_dispatcher(vulkan_context, VK_COMMAND_BUFFER_LEVEL_PRIMARY) {
         VkFenceCreateInfo fence_create_info{};
         fence_create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fence_create_info.pNext = nullptr;
@@ -141,28 +144,29 @@ namespace engine {
         if(vkCreateSemaphore(context->device.logical, &semop_create_info, nullptr, &graphics_semaphore) != VK_SUCCESS)
             throw std::runtime_error("failed to create semaphore");
 
-        //father command buffer and pool
-        VkCommandPoolCreateInfo command_pool_create_info{};
-        command_pool_create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        command_pool_create_info.pNext = nullptr;
-        command_pool_create_info.queueFamilyIndex = context->find_queue_family(context->device.physical).graphics_family.value();
-        if(vkCreateCommandPool(context->device.logical, &command_pool_create_info, nullptr, &command_pool) != VK_SUCCESS)
-            throw std::runtime_error("failed to create command pool");
+        std::cout << "frame created\n";
+    }
 
-        VkCommandBufferAllocateInfo command_buffer_alloc_info{};
-        command_buffer_alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        command_buffer_alloc_info.pNext = nullptr;
-        command_buffer_alloc_info.commandPool = command_pool;
-        command_buffer_alloc_info.commandBufferCount = 1;
-        command_buffer_alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY; //this buffer will store every secondary-level buffer
-        if(vkAllocateCommandBuffers(context->device.logical, &command_buffer_alloc_info, &command_buffer) != VK_SUCCESS)
-            throw std::runtime_error("cannot allocate main command buffer");
+    Frame::Frame(const Frame &fr) : 
+        fence{fr.fence},
+        present_semaphore{fr.present_semaphore},
+        graphics_semaphore{fr.graphics_semaphore},
+        command_dispatcher(fr.command_dispatcher),
+        context(fr.context)
+    {
+        
     }
 
     Frame::~Frame() {
-        vkDestroyCommandPool(context->device.logical, command_pool, nullptr);
         vkDestroyFence(context->device.logical, fence, nullptr);
         vkDestroySemaphore(context->device.logical, graphics_semaphore, nullptr);
         vkDestroySemaphore(context->device.logical, present_semaphore, nullptr);    
+    }
+
+    void Frame::wait_for_fence() {
+        if(vkWaitForFences(context->device.logical, 1, &fence, true, 1000000000) != VK_SUCCESS)
+            throw std::runtime_error("waiting for fence took too long");
+        if(vkResetFences(context->device.logical, 1, &fence) != VK_SUCCESS)
+            throw std::runtime_error("couldn't reset fence");
     }
 }

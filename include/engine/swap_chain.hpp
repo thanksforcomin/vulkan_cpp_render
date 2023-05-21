@@ -20,11 +20,13 @@ namespace engine {
             SwapChain(VulkanContext *context);
             ~SwapChain();
 
-            void create_framebuffers(RenderPass render_pass);
-
-        private:
             VkSwapchainKHR swap_chain;
 
+            Framebuffer &query_framebuffer(uint32_t index);
+            void create_framebuffers(RenderPass &render_pass);
+            uint32_t query_next_image(VkSemaphore &semop);
+
+        private:
             //images and their views
             std::vector<VkImage> swap_chain_images;
             std::vector<VkImageView> swap_chain_image_views;

@@ -74,5 +74,15 @@ namespace engine {
         if(vkCreateRenderPass(context->device.logical, &create_info, nullptr, &data) != VK_SUCCESS)
             throw std::runtime_error("unable to create default render pass");
         std::cout << "created render pass\n";
+
+        begin_info = {};
+        begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        begin_info.pNext = nullptr;
+        begin_info.renderPass = data;
+        begin_info.framebuffer = nullptr; // we will set it later, that's why it's public
+        begin_info.renderArea.offset = {0, 0};
+        begin_info.renderArea.extent = context->swap_chain.swap_chain_extent;
+        begin_info.clearValueCount = clear_value_count;
+        begin_info.pClearValues = clear_value;
     }
 }

@@ -18,7 +18,6 @@ namespace engine {
             ~VulkanContext();
 
             QueueFamilyIndicies find_queue_family(const VkPhysicalDevice &dev) const;
-            void poll_main_loop();
 
         private:
 

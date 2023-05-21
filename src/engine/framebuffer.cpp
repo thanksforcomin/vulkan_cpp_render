@@ -6,7 +6,7 @@
 
 namespace engine {
     Framebuffer::Framebuffer(const VulkanContext *vulkan_context, 
-                             RenderPass render_pass, 
+                             RenderPass &render_pass, 
                              VkImageView *image_attachment,
                              uint32_t width, uint32_t height, uint32_t layers) : context(vulkan_context) 
     {
