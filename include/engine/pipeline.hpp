@@ -32,7 +32,7 @@ namespace engine {
 
             Frame(const VulkanContext *vulkan_context);
             Frame(const Frame &fr);
-            Frame(Frame &&fr) = default;
+            Frame(Frame &&fr);
             ~Frame();
 
             void wait_for_fence();

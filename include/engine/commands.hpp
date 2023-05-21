@@ -10,7 +10,7 @@ namespace engine {
         public:
             CommandDispatcher(const VulkanContext *vulkan_context, VkCommandBufferLevel lvl = VK_COMMAND_BUFFER_LEVEL_SECONDARY);
             CommandDispatcher(CommandDispatcher const& cmd) = default;
-            CommandDispatcher(CommandDispatcher &&cmd) = default;
+            CommandDispatcher(CommandDispatcher &&cmd);
             ~CommandDispatcher();
 
             void reset();

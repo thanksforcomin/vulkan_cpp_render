@@ -13,6 +13,7 @@
 #include "include/engine/renderpass.hpp"
 
 #include <iostream>
+#include <memory>
 
 int main() {
     engine::compile_shader("../res/basic_shader/shader.vert");
@@ -22,10 +23,10 @@ int main() {
 
     VkAttachmentDescription color_attachment = engine::default_attachment(context.swap_chain.swap_chain_image_format);
 
-    std::vector<engine::Frame> frames{
-        engine::Frame(&context), 
-        engine::Frame(&context)
-    };
+    //todo: clean up the mess
+    std::vector<std::unique_ptr<engine::Frame>> frames;
+    frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
+    frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
 
     VkClearValue clear_val{};
     clear_val.color = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -36,13 +37,13 @@ int main() {
 
     //main loop
     while(context.window.is_alive()) {
-        engine::Frame &frame = frames[curr_frame++];
+        std::unique_ptr<engine::Frame> &frame = frames[curr_frame++];
 
-        frame.wait_for_fence();
+        frame->wait_for_fence();
 
-        uint32_t swap_chain_image_index = context.swap_chain.query_next_image(frame.present_semaphore);
+        uint32_t swap_chain_image_index = context.swap_chain.query_next_image(frame->present_semaphore);
         std::cout << curr_frame << "\n";
-        frame.command_dispatcher.reset();
+        frame->command_dispatcher.reset();
 
         main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index).data;
 

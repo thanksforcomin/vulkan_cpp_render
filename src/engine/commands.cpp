@@ -26,13 +26,24 @@ namespace engine {
         if (vkAllocateCommandBuffers(context->device.logical, &command_buffer_alloc_info, &command_buffer) != VK_SUCCESS)
             throw std::runtime_error("cannot allocate main command buffer");
     }
-    
+
+    CommandDispatcher::CommandDispatcher(CommandDispatcher &&cmd) :
+        command_buffer(cmd.command_buffer),
+        command_pool(cmd.command_pool),
+        command_buffer_begin_info(cmd.command_buffer_begin_info),
+        context(cmd.context)
+    {
+        cmd.command_buffer = NULL;
+        cmd.command_pool = NULL;
+    }
+
     void CommandDispatcher::reset() {
         if(vkResetCommandBuffer(command_buffer, 0) != VK_SUCCESS)
             throw std::runtime_error("cannot reset main command buffer");
     }
 
     CommandDispatcher::~CommandDispatcher() {
-        vkDestroyCommandPool(context->device.logical, command_pool, nullptr);
+        if(command_pool)
+            vkDestroyCommandPool(context->device.logical, command_pool, nullptr);
     }
 }

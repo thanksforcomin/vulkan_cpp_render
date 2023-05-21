@@ -11,8 +11,8 @@ project(    pretzel
     LANGUAGES CXX
 )
 
-#add_compile_options(-g -fsanitize=address)
-#add_link_options(-fsanitize=address)
+#add_compile_options(-v)
+#add_link_options(-v)
 #i will use it someday
 
 file(GLOB_RECURSE SOURCES src/*.c**)

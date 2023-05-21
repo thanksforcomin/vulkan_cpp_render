@@ -157,6 +157,18 @@ namespace engine {
         
     }
 
+    Frame::Frame(Frame &&fr) : 
+        fence{fr.fence},
+        present_semaphore{fr.present_semaphore},
+        graphics_semaphore{fr.graphics_semaphore},
+        command_dispatcher(fr.command_dispatcher),
+        context(std::move(fr.context))
+    {
+        fr.fence = NULL;
+        fr.present_semaphore = NULL;
+        fr.graphics_semaphore = NULL;
+    }
+
     Frame::~Frame() {
         vkDestroyFence(context->device.logical, fence, nullptr);
         vkDestroySemaphore(context->device.logical, graphics_semaphore, nullptr);
