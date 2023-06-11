@@ -55,6 +55,7 @@ namespace engine {
         color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         VkAttachmentReference color_attachment_reference{};
         color_attachment_reference.attachment = 0;
@@ -66,6 +67,7 @@ namespace engine {
         subpass.pColorAttachments = &color_attachment_reference;
 
         VkRenderPassCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         create_info.attachmentCount = 1;
         create_info.pAttachments = &color_attachment;
         create_info.subpassCount = 1;

@@ -16,7 +16,7 @@
 #include <memory>
 
 int main() {
-    engine::compile_shader("../res/basic_shader/shader.vert");
+    //engine::compile_shader("../res/basic_shader/shader.vert");
     engine::VulkanContext context;
 
     uint32_t curr_frame = 0;
@@ -47,10 +47,16 @@ int main() {
 
         main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index).data;
 
-        /*vkBeginCommandBuffer(frame.command_buffer, &frame.command_buffer_begin_info);
+        /*vkBeginCommandBuffer(frame->command_buffer, &frame->command_buffer_begin_info);
         vkCmdBeginRenderPass(frame.command_buffer, &main_render_pass.begin_info, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdEndRenderPass(frame.command_buffer);
         vkEndCommandBuffer(frame.command_buffer);*/
+
+        frame->command_dispatcher.begin(main_render_pass);
+        frame->command_dispatcher.end();
+
+        context.submit(frame.get());
+        context.present(frame.get(), &swap_chain_image_index);
 
         glfwPollEvents();
     }

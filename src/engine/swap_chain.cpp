@@ -86,7 +86,7 @@ namespace engine {
             return capabilities.currentExtent;
         else {
             int width, height;
-            glfwGetFramebufferSize(Window::window_ptr, &width, &height);
+            glfwGetFramebufferSize(vulkan_context->window.window_ptr.get(), &width, &height);
             std::cout << "framebuffer size: " << width << " x " << height << "\n";
 
             VkExtent2D new_extent = {
@@ -133,10 +133,10 @@ namespace engine {
             create_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
             create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            create_info.subresourceRange.aspectMask = 0;
             create_info.subresourceRange.levelCount = 1;
             create_info.subresourceRange.baseArrayLayer = 0;
-            create_info.subresourceRange.baseMipLevel = 1;
+            create_info.subresourceRange.baseMipLevel = 0;
+            create_info.subresourceRange.layerCount = 1;
 
             if (vkCreateImageView(vulkan_context->device.logical, &create_info, nullptr, &swap_chain_image_views[i]) != VK_SUCCESS) {
                 throw std::runtime_error("cannot create image view");

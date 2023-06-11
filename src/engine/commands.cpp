@@ -1,5 +1,6 @@
 #include "include/engine/commands.hpp"
 #include "include/engine/vulkan_context.hpp"
+#include "include/engine/renderpass.hpp"
 
 namespace engine {
     CommandDispatcher::CommandDispatcher(const VulkanContext *vulkan_context, VkCommandBufferLevel lvl) : 
@@ -9,6 +10,7 @@ namespace engine {
         command_pool_create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         command_pool_create_info.pNext = nullptr;
         command_pool_create_info.queueFamilyIndex = context->find_queue_family(context->device.physical).graphics_family.value();
+        command_pool_create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         if(vkCreateCommandPool(context->device.logical, &command_pool_create_info, nullptr, &command_pool) != VK_SUCCESS)
             throw std::runtime_error("failed to create command pool");
 
@@ -40,6 +42,16 @@ namespace engine {
     void CommandDispatcher::reset() {
         if(vkResetCommandBuffer(command_buffer, 0) != VK_SUCCESS)
             throw std::runtime_error("cannot reset main command buffer");
+    }
+
+    void CommandDispatcher::begin(const RenderPass& rp) {
+        vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info);
+        vkCmdBeginRenderPass(command_buffer, &rp.begin_info, VK_SUBPASS_CONTENTS_INLINE);
+    }
+    
+    void CommandDispatcher::end() {
+        vkCmdEndRenderPass(command_buffer);
+        vkEndCommandBuffer(command_buffer);
     }
 
     CommandDispatcher::~CommandDispatcher() {

@@ -15,7 +15,7 @@ namespace engine {
 
             void reset();
             void begin(const RenderPass &rp);
-            void end(const RenderPass &rp);
+            void end();
 
             VkCommandPool command_pool;
             VkCommandBuffer command_buffer;

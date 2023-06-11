@@ -3,15 +3,20 @@
 #include "include/engine/defines.hpp"
 #include "include/engine/details.hpp"
 
+#include <memory>
+
 namespace engine {
     class Window {
         public:
-            static GLFWwindow *window_ptr;
+            std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)> window_ptr;
 
         public:
-            Window(const VkInstance &inst, unsigned int width = WIDTH, unsigned int height = HEIGHT);
+            Window(unsigned int width = WIDTH, unsigned int height = HEIGHT);
             ~Window();
 
-            inline bool is_alive() { return !glfwWindowShouldClose(window_ptr); };
+            inline bool is_alive() { return !glfwWindowShouldClose(window_ptr.get()); };
+
+        private:
+            GLFWwindow* create_window(uint32_t width, uint32_t height);
     };
 }

@@ -2,6 +2,10 @@
     #define HEIGHT 720
 #endif
 
+#ifndef IS_DEBUG
+    #define IS_DEBUG true
+#endif
+
 #ifndef WIDTH
     #define WIDTH 720
 #endif
