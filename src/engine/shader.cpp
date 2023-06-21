@@ -46,7 +46,7 @@ namespace engine {
             return sh_mod;
         return VK_NULL_HANDLE;
     }
-
+    
     inline VkPipelineShaderStageCreateInfo Shader::shader_stage_creation_info(VkShaderStageFlagBits flag, VkShaderModule &mod) {
         VkPipelineShaderStageCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

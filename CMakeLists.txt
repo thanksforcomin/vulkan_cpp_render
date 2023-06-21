@@ -6,12 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_COMPILER /bin/clang++)
 set(CMAKE_C_COMPILER /bin/clang)
 
-project(    pretzel
+project(    minivan
     DESCRIPTION "i have no idea what i'm doing"
     LANGUAGES CXX
 )
 
-#add_compile_options(-v)
+add_compile_options(-w)
 #add_link_options(-v)
 #i will use it someday
 
@@ -26,6 +26,7 @@ else()
     #boost 
     find_package(Boost REQUIRED COMPONENTS system thread)
     if(Boost_FOUND)
+        message("boost found")
         include_directories(PUBLIC ${Boost_INCLUDE_DIRS})
         target_link_libraries(test ${Boost_LIBRARIES})
     else()
@@ -65,3 +66,7 @@ endif()
 set(GLM_DIR "libs/glm")
 add_subdirectory(${GLM_DIR})
 target_link_libraries(test glm::glm)
+
+set(VMA_DIR "libs/VulkanMemoryAllocator")
+add_subdirectory(${VMA_DIR})
+include_directories(PUBLIC ${VMA_DIR}/include)

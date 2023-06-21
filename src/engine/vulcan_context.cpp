@@ -8,6 +8,8 @@
 #include <set>
 #include <cstring>
 
+//#include <boost/log/trivial.hpp>
+
 /*TODO:
 Redesign Window class to be static, design the queue_family to be in two separate files*/
 
@@ -204,6 +206,15 @@ namespace engine
         {
             throw std::runtime_error("failed to load debug layer");
         }
+    }
+
+    void VulkanContext::create_allocator() {
+        VmaAllocatorCreateInfo create_info{};
+        create_info.physicalDevice = device.physical;
+        create_info.device = device.logical;
+        create_info.instance = instance;
+        if(vmaCreateAllocator(&create_info, &allocator) != VK_SUCCESS) throw std::runtime_error("cannot create VMA allocator");
+        else std::cout << "created VMA allocator\n";
     }
 
     bool VulkanContext::is_device_suitable(VkPhysicalDevice dev)

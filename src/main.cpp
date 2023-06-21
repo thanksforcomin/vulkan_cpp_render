@@ -11,6 +11,8 @@
 #include "include/engine/shader_loader.hpp"
 #include "include/engine/pipeline.hpp"
 #include "include/engine/renderpass.hpp"
+#include "include/engine/buffers.hpp"
+#include "include/engine/descriptor.hpp"
 
 #include <iostream>
 #include <memory>
@@ -29,15 +31,21 @@ int main() {
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
 
     VkClearValue clear_val{};
-    clear_val.color = {0.0f, 0.0f, 0.0f, 1.0f};
+    clear_val.color = {0.0f, 0.0f, 1.0f, 1.0f};
 
     engine::RenderPass main_render_pass(&context, 1, &clear_val);
     main_render_pass.init_default();
     context.swap_chain.create_framebuffers(main_render_pass);
 
+    engine::DescriptorPool pool(&context);
+    pool.push(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 100);
+    pool.push(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100);
+    pool.push(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3);
+    pool.init();
+
     //main loop
     while(context.window.is_alive()) {
-        std::unique_ptr<engine::Frame> &frame = frames[curr_frame++];
+        std::unique_ptr<engine::Frame> &frame = frames[(curr_frame++)%2];
 
         frame->wait_for_fence();
 

@@ -2,6 +2,8 @@
 
 #include "include/engine/swap_chain.hpp"
 
+#include "vk_mem_alloc.h"
+
 #include <string>
 #include <vector>
 #include <optional>
@@ -42,6 +44,7 @@ namespace engine {
             VkQueue load_device_queue(const vulkan_device& dev, queue_families family = queue_families::GRAPHICS);
             VkInstance init_vulkan();
             void set_debug_messenger();
+            void create_allocator();
 
         public: //i have no possible idea how to make it better
             //window first (we need extensions)
@@ -57,6 +60,8 @@ namespace engine {
             const VkQueue present_queue;
             // swap chain
             SwapChain swap_chain;
+            // memory allocator
+            VmaAllocator allocator;
 
         private:
             swap_chain_support_details query_swap_chain_support(const VkPhysicalDevice &dev);
