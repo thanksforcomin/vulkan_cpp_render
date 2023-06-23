@@ -4,20 +4,44 @@
 #define __PIPELINE_H__
 #include "include/engine/shader.hpp"
 #include "include/engine/commands.hpp"
+#include "include/engine/descriptor.hpp"
+#include "include/engine/renderpass.hpp"
 
 namespace engine {
     class VulkanContext; //forward decl
 
     class Pipeline {
-        public:
-            Pipeline(Shader &vert_shader, Shader &frag_shader, VulkanContext *vulkan_context);
-            ~Pipeline();
 
         private:
-            void create_pipeline_layout(Shader &vert_shader, Shader &frag_shader);
+            struct StagesInfo {
+                VkPipelineVertexInputStateCreateInfo vertex_input_state;
+                VkPipelineInputAssemblyStateCreateInfo assembly_input_state;
+                VkPipelineViewportStateCreateInfo viewport_state;
+                VkPipelineRasterizationStateCreateInfo rasterization_state;
+                VkPipelineMultisampleStateCreateInfo multisample_state;
+                VkPipelineDepthStencilStateCreateInfo depth_stencil_state;
+                VkPipelineColorBlendStateCreateInfo color_blend_state;
+                VkPipelineDynamicStateCreateInfo dynamic_state;
+                std::vector<VkPipelineShaderStageCreateInfo> shader_stages;
+            };
+
+        public:
+            Pipeline(VulkanContext *vulkan_context);
+            ~Pipeline();
+            void init(StagesInfo stages_info, RenderPass &render_pass);
+
+        private:
+
+            StagesInfo get_default_create_info(Shader &vert_shader, Shader &frag_shader, std::vector<VkDescriptorSetLayout>& sets);
+            StagesInfo get_depth_create_info(Shader &vert_shader, Shader &frag_shader, std::vector<VkDescriptorSetLayout>& sets);
 
             const VulkanContext *context;
+
+            void create_layout(std::vector<VkDescriptorSetLayout>& sets); //TODO: i really want to redesign the VulkanContext class because i don't do initialisation like in there anymore
+        
+        public:
             VkPipelineLayout pipeline_layout;
+            VkPipeline pipeline;
     };
 
     class Frame

@@ -4,13 +4,39 @@
 #include <iostream>
 
 namespace engine {
-    Pipeline::Pipeline(Shader &vert_shader, Shader &frag_shader, VulkanContext *vulkan_context) : context(vulkan_context)
+    Pipeline::Pipeline(VulkanContext *vulkan_context) : context(vulkan_context)
     {
-        create_pipeline_layout(vert_shader, frag_shader);
+        //create_pipeline_layout(vert_shader, frag_shader);
     }
 
-    void Pipeline::create_pipeline_layout(Shader &vert_shader, Shader &frag_shader) {
-        //shader stages
+    void Pipeline::init(StagesInfo stages_info, RenderPass &render_pass) {
+
+        VkGraphicsPipelineCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        create_info.stageCount = 2;
+        create_info.pStages = &stages_info.shader_stages[0];
+        create_info.pVertexInputState = &stages_info.vertex_input_state;
+        create_info.pInputAssemblyState = &stages_info.assembly_input_state;
+        create_info.pViewportState = &stages_info.viewport_state;
+        create_info.pRasterizationState = &stages_info.rasterization_state;
+        create_info.pMultisampleState = &stages_info.multisample_state;
+        create_info.pDepthStencilState = &stages_info.depth_stencil_state;
+        create_info.pColorBlendState = &stages_info.color_blend_state;
+        create_info.pDynamicState = &stages_info.dynamic_state;
+        create_info.layout = pipeline_layout;
+        create_info.renderPass = render_pass.data;
+        create_info.subpass = 9;
+        create_info.basePipelineHandle = VK_NULL_HANDLE;
+        create_info.basePipelineIndex = -1; //i have no idea what this line is doing
+        create_info.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
+
+        if(vkCreateGraphicsPipelines(context->device.logical, VK_NULL_HANDLE, 1, &create_info, nullptr, &pipeline) != VK_SUCCESS) 
+            throw std::runtime_error("failed to create graphics pipeline");
+        std::cout << "pipeline allocated\n";
+
+    }
+
+    Pipeline::StagesInfo Pipeline::get_default_create_info(Shader &vert_shader, Shader &frag_shader, std::vector<VkDescriptorSetLayout>& sets) {
         VkPipelineShaderStageCreateInfo shader_stages_create_info[] = {vert_shader.stage_create_info, frag_shader.stage_create_info};
 
         //dynamic states
@@ -114,17 +140,30 @@ namespace engine {
         color_blend_info.blendConstants[2] = 0.0f; //we won't need it
         color_blend_info.blendConstants[3] = 0.0f; //we won't need it
 
-        //pipeline layout info
+        StagesInfo stages_info{};
+        stages_info.assembly_input_state = input_info;
+        stages_info.vertex_input_state = vertex_input_info;
+        stages_info.viewport_state = viewport_state_info;
+        stages_info.rasterization_state = rasterizer_info;
+        stages_info.multisample_state = multisampling_info;
+        stages_info.depth_stencil_state = depth_stencil_info;
+        stages_info.color_blend_state = color_blend_info;
+        stages_info.dynamic_state = dynamic_state_info;
+        stages_info.shader_stages = std::vector<VkPipelineShaderStageCreateInfo> {shader_stages_create_info[0], shader_stages_create_info[1]}; //TODO: fix
+    }
+
+    void Pipeline::create_layout(std::vector<VkDescriptorSetLayout>& sets) {
         VkPipelineLayoutCreateInfo pipeline_layout_info;
         pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        
-        
-        //std::vector<VkDescriptorSetLayout>
+        pipeline_layout_info.setLayoutCount = sets.size();
+        pipeline_layout_info.pSetLayouts = &sets[0];
+        pipeline_layout_info.pPushConstantRanges = 0; //TODO: add push constants
+        pipeline_layout_info.pushConstantRangeCount = 0;
 
-        //it's said to implictly destroy these
-        vkDestroyShaderModule(context->device.logical, vert_shader.shader_module, nullptr);
-        vkDestroyShaderModule(context->device.logical, frag_shader.shader_module, nullptr);
-    }
+        if(vkCreatePipelineLayout(context->device.logical, &pipeline_layout_info, nullptr, &pipeline_layout) != VK_SUCCESS) 
+            throw std::runtime_error("failed to create pipeline layout");
+        std::cout << "created pipeline layout (don't forget to init it)\n";
+    }        
 }
 
 namespace engine {
