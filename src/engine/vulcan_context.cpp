@@ -23,6 +23,7 @@ namespace engine
                                      present_queue(load_device_queue(device, queue_families::PRESENT)),
                                      swap_chain(this)
     {
+        create_allocator();
         std::cout << "new vulkan context\n";
     }
 

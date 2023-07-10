@@ -7,33 +7,44 @@
 #include "include/engine/descriptor.hpp"
 #include "include/engine/renderpass.hpp"
 
+#include <memory>
+
 namespace engine {
     class VulkanContext; //forward decl
 
-    class Pipeline {
-
+    class PipelineConfiguration {
         private:
-            struct StagesInfo {
-                VkPipelineVertexInputStateCreateInfo vertex_input_state;
-                VkPipelineInputAssemblyStateCreateInfo assembly_input_state;
-                VkPipelineViewportStateCreateInfo viewport_state;
-                VkPipelineRasterizationStateCreateInfo rasterization_state;
-                VkPipelineMultisampleStateCreateInfo multisample_state;
-                VkPipelineDepthStencilStateCreateInfo depth_stencil_state;
-                VkPipelineColorBlendStateCreateInfo color_blend_state;
-                VkPipelineDynamicStateCreateInfo dynamic_state;
-                std::vector<VkPipelineShaderStageCreateInfo> shader_stages;
-            };
+            VulkanContext *context;
 
+            std::vector<VkDynamicState> dynamic_states_array;
+            VkViewport viewports;
+            VkRect2D scissors;
+        public:
+            std::unique_ptr<VkPipelineVertexInputStateCreateInfo> vertex_input_state;
+            std::unique_ptr<VkPipelineInputAssemblyStateCreateInfo> input_assembly_state;
+            std::unique_ptr<VkPipelineViewportStateCreateInfo> viewport_state;
+            std::unique_ptr<VkPipelineRasterizationStateCreateInfo> rasterization_state;
+            std::unique_ptr<VkPipelineMultisampleStateCreateInfo> multisample_state;
+            std::unique_ptr<VkPipelineDepthStencilStateCreateInfo> depth_stencil_state;
+            std::unique_ptr<VkPipelineColorBlendStateCreateInfo> color_blend_state;
+            std::unique_ptr<VkPipelineDynamicStateCreateInfo> dynamic_state_info;
+            std::vector<VkPipelineShaderStageCreateInfo> shader_stages;
+
+        public:
+            PipelineConfiguration(VulkanContext *vulkan_context, Shader &vert_shader, Shader &frag_shader);
+            ~PipelineConfiguration();
+    };
+
+    class Pipeline {
         public:
             Pipeline(VulkanContext *vulkan_context);
             ~Pipeline();
-            void init(StagesInfo stages_info, RenderPass &render_pass);
+            void init(PipelineConfiguration &config, RenderPass &render_pass);
 
         private:
 
-            StagesInfo get_default_create_info(Shader &vert_shader, Shader &frag_shader, std::vector<VkDescriptorSetLayout>& sets);
-            StagesInfo get_depth_create_info(Shader &vert_shader, Shader &frag_shader, std::vector<VkDescriptorSetLayout>& sets);
+            //StagesInfo get_default_create_info(Shader &vert_shader, Shader &frag_shader, std::vector<VkDescriptorSetLayout>& sets);
+            //StagesInfo get_depth_create_info(Shader &vert_shader, Shader &frag_shader, std::vector<VkDescriptorSetLayout>& sets);
 
             const VulkanContext *context;
 

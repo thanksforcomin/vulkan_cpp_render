@@ -17,6 +17,10 @@
 #include <iostream>
 #include <memory>
 
+struct example {
+    int u;
+};
+
 int main() {
     //engine::compile_shader("../res/basic_shader/shader.vert");
     engine::VulkanContext context;
@@ -43,6 +47,10 @@ int main() {
     pool.push(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3);
     pool.init();
 
+    engine::UniformBuffer<example> ubo(&context);
+
+    engine::DescriptorSet camera_descriptor(&context);
+
     //main loop
     while(context.window.is_alive()) {
         std::unique_ptr<engine::Frame> &frame = frames[(curr_frame++)%2];
@@ -50,7 +58,7 @@ int main() {
         frame->wait_for_fence();
 
         uint32_t swap_chain_image_index = context.swap_chain.query_next_image(frame->present_semaphore);
-        std::cout << curr_frame << "\n";
+        //std::cout << curr_frame << "\n"; //debug purposes
         frame->command_dispatcher.reset();
 
         main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index).data;

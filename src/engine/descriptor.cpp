@@ -5,10 +5,10 @@
 
 namespace engine {
     DescriptorSet::DescriptorSet(VulkanContext *vulkan_context) : context(vulkan_context) {
-        
+
     }
 
-    void DescriptorSet::push(VkDescriptorType type, VkShaderStageFlagBits shader_stage, uint32_t binding_point) {
+    void DescriptorSet::push_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage, uint32_t binding_point) {
         VkDescriptorSetLayoutBinding binding{};
         binding.binding = std::max(binding_point, (uint32_t)bindings.size());
         binding.descriptorCount = 1;
@@ -43,6 +43,17 @@ namespace engine {
         std::cout << "allocated descriptor set\n";
     }
 
+    void DescriptorSet::update_buffers() {
+        vkUpdateDescriptorSets(context->device.logical, (uint32_t)write_descriptor_sets.size(), &write_descriptor_sets[0], 0, nullptr);
+    }
+    /*
+    template<typename T>
+    void DescriptorSet::assign_uniform_buffer(UniformBuffer<T>& buffer) {
+        
+    }*/
+}
+
+namespace engine {
     DescriptorSet::~DescriptorSet() {
         vkDestroyDescriptorSetLayout(context->device.logical, layout, nullptr);
     }

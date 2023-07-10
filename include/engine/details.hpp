@@ -129,4 +129,111 @@ namespace engine {
             }
         };
     }
+
+    namespace defaults {
+        constexpr VkPipelineVertexInputStateCreateInfo _vertex_input_state_create_info {
+            VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+            nullptr, 
+            0,
+            1,
+            &vertex::bind_description,
+            4,
+            &vertex::attrib_descriptions[0]
+        };
+
+        constexpr VkPipelineInputAssemblyStateCreateInfo _assembly_input_state_create_info {
+            VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+            nullptr,
+            0,
+            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+            VK_FALSE
+        };
+
+        constexpr VkPipelineRasterizationStateCreateInfo _rasterization_state_create_info {
+            VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+            nullptr,
+            0,
+            VK_FALSE,
+            VK_FALSE,
+            VK_POLYGON_MODE_FILL,
+            VK_CULL_MODE_BACK_BIT,
+            VK_FRONT_FACE_CLOCKWISE,
+            VK_FALSE,
+            0.0f,
+            0.0f,
+            0.0f,
+            1.0f
+        };
+
+        constexpr VkPipelineMultisampleStateCreateInfo _multisample_state_create_info {
+            VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+            nullptr, 
+            0,
+            VK_SAMPLE_COUNT_1_BIT,
+            VK_FALSE,
+            1.0f,
+            nullptr,
+            VK_FALSE,
+            VK_FALSE
+        }; 
+
+        constexpr VkPipelineDepthStencilStateCreateInfo _depth_and_stencil_state_create_info {
+            VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+            nullptr,
+            0,
+            VK_FALSE,
+            VK_FALSE,
+            VK_COMPARE_OP_LESS_OR_EQUAL,
+            VK_FALSE,
+            VK_FALSE,
+            VkStencilOpState{},
+            VkStencilOpState{},
+            0.0f,
+            0.0f
+        };
+
+        constexpr VkPipelineColorBlendAttachmentState _color_blend_attachment_state {
+            VK_TRUE,
+            VK_BLEND_FACTOR_SRC_ALPHA,
+            VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+            VK_BLEND_OP_ADD,
+            VK_BLEND_FACTOR_ONE,
+            VK_BLEND_FACTOR_ZERO,
+            VK_BLEND_OP_ADD, 
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+        };
+
+        constexpr VkPipelineColorBlendStateCreateInfo _color_blend_attachment_state_create_info {
+            VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+            nullptr, 
+            0,
+            VK_FALSE,
+            VK_LOGIC_OP_COPY,
+            1,
+            &_color_blend_attachment_state,
+            {0.0f, 0.0f, 0.0f, 0.0f}
+        };
+
+        constexpr VkDynamicState _dynamic_states[2] { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+
+        constexpr VkPipelineDynamicStateCreateInfo _dynamic_state_create_info {
+            VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+            nullptr,
+            0,
+            2,
+            &_dynamic_states[0]
+        };
+
+        inline VkPipelineViewportStateCreateInfo _get_viewport_state_create_info(const VkViewport *viewport, const VkRect2D *scissors) {
+            return VkPipelineViewportStateCreateInfo {
+                VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+                nullptr, 
+                0, 
+                1, 
+                viewport,
+                1,
+                scissors
+            };
+        };
+    }
 }

@@ -24,9 +24,21 @@ namespace engine {
                            nullptr) 
                            != VK_SUCCESS) 
             throw std::runtime_error("unable to create buffer");
+        std::cout << "buffer allocated\n";
     }
 
     Buffer::~Buffer() {
         vmaDestroyBuffer(context->allocator, buffer, allocation);
+    }
+}
+
+namespace engine {
+    VertexBuffer::VertexBuffer(VulkanContext *context, std::vector<vertex::Vertex> &data) : 
+        Buffer(context, data.size() * sizeof(vertex::Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VMA_MEMORY_USAGE_CPU_TO_GPU)
+    {
+        void *buf;
+        vmaMapMemory(context->allocator, allocation, &buf);
+        memcpy(buf, &data[0], data.size() * sizeof(vertex::Vertex));
+        vmaUnmapMemory(context->allocator, allocation)
     }
 }
