@@ -53,6 +53,8 @@ namespace engine {
             VkInstance instance;
             //Surface then
             VkSurfaceKHR surface;
+            //family indicies
+            QueueFamilyIndicies queue_family;
             // Physical and logical devices
             const vulkan_device device;
             //Queues 

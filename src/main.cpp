@@ -27,8 +27,6 @@ int main() {
 
     uint32_t curr_frame = 0;
 
-    VkAttachmentDescription color_attachment = engine::default_attachment(context.swap_chain.swap_chain_image_format);
-
     //todo: clean up the mess
     std::vector<std::unique_ptr<engine::Frame>> frames;
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
@@ -47,7 +45,7 @@ int main() {
     pool.push(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3);
     pool.init();
 
-    engine::UniformBuffer<example> ubo(&context);
+    engine::UniformBuffer<engine::uniform::camera_data> camera_UBO(&context);
 
     engine::DescriptorSet camera_descriptor(&context);
 

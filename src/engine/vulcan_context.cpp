@@ -18,6 +18,7 @@ namespace engine
     VulkanContext::VulkanContext() : window(),
                                      instance(init_vulkan()),
                                      surface(load_surface()),
+                                     queue_family(find_queue_family(device.physical)),
                                      device(load_device()),
                                      graphics_queue(load_device_queue(device, queue_families::GRAPHICS)),
                                      present_queue(load_device_queue(device, queue_families::PRESENT)),
@@ -112,10 +113,8 @@ namespace engine
 
     VkDevice VulkanContext::load_logical_device(VkPhysicalDevice &dev)
     {
-        QueueFamilyIndicies indicies = find_queue_family(dev);
-
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-        std::set<uint32_t> unique_family_queues = {indicies.graphics_family.value(), indicies.present_family.value()};
+        std::set<uint32_t> unique_family_queues = {queue_family.graphics_family.value(), queue_family.present_family.value()};
         float queue_priority = 1.0f;
 
         for (uint32_t queue_family : unique_family_queues)

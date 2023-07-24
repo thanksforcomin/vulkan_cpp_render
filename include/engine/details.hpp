@@ -4,6 +4,9 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
+#include "tiny_obj_loader.h"
+#include "vk_mem_alloc.h"
+#include "stb_image.h"
 
 //#include <vulkan/vulkan.hpp> //cpp style vulkan here
 //it makes compilation slower and i use C style always anyway
@@ -130,6 +133,14 @@ namespace engine {
         };
     }
 
+    namespace uniform {
+        struct camera_data {
+            glm::mat4 view;
+            glm::mat4 proj;
+            glm::mat4 viewproj;
+        };
+    }
+
     namespace defaults {
         constexpr VkPipelineVertexInputStateCreateInfo _vertex_input_state_create_info {
             VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
@@ -214,7 +225,10 @@ namespace engine {
             {0.0f, 0.0f, 0.0f, 0.0f}
         };
 
-        constexpr VkDynamicState _dynamic_states[2] { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+        constexpr VkDynamicState _dynamic_states[2] { 
+            VK_DYNAMIC_STATE_VIEWPORT, 
+            VK_DYNAMIC_STATE_SCISSOR 
+        };
 
         constexpr VkPipelineDynamicStateCreateInfo _dynamic_state_create_info {
             VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -235,5 +249,70 @@ namespace engine {
                 scissors
             };
         };
+
+        inline VkImageCreateInfo _get_image_create_info(VkFormat format, VkImageUsageFlags flags, VkExtent3D extent, uint32_t mip_levels = 1) {
+            return VkImageCreateInfo {
+                VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                nullptr, 
+                0,
+                VK_IMAGE_TYPE_2D,
+                format,
+                extent, 
+                mip_levels,
+                1,
+                VK_SAMPLE_COUNT_1_BIT,
+                VK_IMAGE_TILING_OPTIMAL,
+                flags, 
+                VK_SHARING_MODE_EXCLUSIVE,
+                0, 
+                nullptr,
+                VK_IMAGE_LAYOUT_PREINITIALIZED
+            };
+        };
+        
+        inline VkImageViewCreateInfo _get_image_view_create_info(VkFormat format, VkImage image, VkImageAspectFlags aspect_flags, uint32_t mip_levels = 1) {
+            return VkImageViewCreateInfo {
+                VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                nullptr, 
+                0,
+                image, 
+                VK_IMAGE_VIEW_TYPE_2D,
+                format,
+                VkComponentMapping {
+                    VK_COMPONENT_SWIZZLE_R,
+                    VK_COMPONENT_SWIZZLE_G,
+                    VK_COMPONENT_SWIZZLE_B,
+                    VK_COMPONENT_SWIZZLE_A
+                },
+                VkImageSubresourceRange {
+                    VK_IMAGE_ASPECT_COLOR_BIT,
+                    0,
+                    mip_levels, 
+                    0, 
+                    1
+                }
+            };   
+        };
     }
+
+    struct allocated_buffer {
+        VkBuffer buffer;
+        VmaAllocation allocation;
+    };
+
+    static allocated_buffer allocate_buffer(VmaAllocator &allocator, size_t size, VkBufferUsageFlags flags, VmaMemoryUsage usage) {
+        allocated_buffer buffer;
+
+        VkBufferCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        create_info.pNext = nullptr;
+        create_info.size = size;
+        create_info.usage = flags;
+
+        VmaAllocationCreateInfo allocation_info{};
+        allocation_info.usage = usage;
+
+        vmaCreateBuffer(allocator, &create_info, &allocation_info, &buffer.buffer, &buffer.allocation, nullptr);
+        return buffer;
+    };
 }

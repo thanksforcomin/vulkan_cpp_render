@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_COMPILER /bin/clang++)
 set(CMAKE_C_COMPILER /bin/clang)
 
@@ -62,6 +62,13 @@ else()
         message("no glfw???")
     endif()
 endif()
+
+set(TINY_OBJ_LOADER_DIR "libs/tinyobjloader")
+add_subdirectory(${TINY_OBJ_LOADER_DIR})
+target_link_libraries(test tinyobjloader)
+
+set(STB_DIR "libs/stb")
+include_directories(PUBLIC ${STB_DIR})
 
 set(GLM_DIR "libs/glm")
 add_subdirectory(${GLM_DIR})
