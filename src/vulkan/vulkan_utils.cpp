@@ -11,7 +11,7 @@ namespace vulkan {
      *
      * return A vector of const char* containing the required extensions.
      */
-    std::vector<const char*> get_required_extensions() {
+    std::vector<const char*> require_extensions() {
         uint32_t glfwExtensionCount = 0;
         const char **glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -138,5 +138,13 @@ namespace vulkan {
         }
 
         return available_formats[0];
+    }
+
+    std::vector<VkImage> get_swap_chain_images(VkDevice &dev, VkSwapchainKHR &swap_chain) {
+        uint32_t image_count;
+        vkGetSwapchainImagesKHR(dev, swap_chain, &image_count, nullptr);
+        std::vector<VkImage> swap_chain_images(image_count);
+        vkGetSwapchainImagesKHR(dev, swap_chain, &image_count, swap_chain_images.data());
+        return swap_chain_images;
     }
 }

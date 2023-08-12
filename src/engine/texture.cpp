@@ -3,9 +3,11 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 
+#include <cstring>
+
 namespace engine {
     Texture::Texture(VulkanContext *vulkan_context) {
-        create_image(defaults::_get_image_create_info())
+        //create_image(defaults::_get_image_create_info())
     }
 
     Texture::Texture(VulkanContext *vulkan_context, VkImageCreateInfo &img_create_info, VkImageViewCreateInfo &img_view_create_info) {
@@ -13,7 +15,7 @@ namespace engine {
     }
 
     void Texture::load_from_file(std::string filepath) {
-        int width;
+        /*int width;
         int height;
         int channels;
 
@@ -27,8 +29,8 @@ namespace engine {
 
         void* buf;
         vmaMapMemory(context->allocator, allocation, &buf);
-        memcpy(buf, data_ptr, (size_t)img_size);
-        vmaUnmapMemory(context->allocator, allocation);
+        std::memcpy(buf, data_ptr, (size_t)img_size);
+        vmaUnmapMemory(context->allocator, allocation);*/
     }
 
     

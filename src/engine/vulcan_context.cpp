@@ -8,6 +8,9 @@
 #include <set>
 #include <cstring>
 
+#define VMA_IMPLEMENTATION
+#include "vk_mem_alloc.h"
+
 //#include <boost/log/trivial.hpp>
 
 /*TODO:

@@ -72,7 +72,10 @@ namespace vulkan {
         std::runtime_error("no device is good enough.");
         return VK_NULL_HANDLE;
     };
-
+        
+    /**
+    * Creates a logical device for Vulkan graphics rendering.
+    */
     VkDevice create_logical_device(VkPhysicalDevice &dev, VkSurfaceKHR &surface) {
         queue_family_indicies queue_family = find_queue_family(dev, surface);
         std::set<uint32_t> unique_family_queues = {queue_family.graphics_family.value(), queue_family.present_family.value()};
@@ -109,9 +112,37 @@ namespace vulkan {
         return queue;
     }
 
-    VkSwapchainKHR create_swap_chain(vulkan_device &dev, VkSurfaceKHR &surface) {
+    VkSwapchainKHR create_swap_chain(vulkan_device &dev, VkSurfaceKHR &surface, GLFWwindow *window) {
+        queue_family_indicies indicies = find_queue_family(dev.physical, surface);
+
+        VkSwapchainCreateInfoKHR create_info{ 
+            swap_chain_create_info(window,
+                                   1, 
+                                   get_swap_chain_support(dev.physical, surface), 
+                                   surface, 
+                                   {indicies.graphics_family.value(), indicies.present_family.value()}, 
+                                   VK_NULL_HANDLE) 
+        };
+
         VkSwapchainKHR swap_chain;
         vkCreateSwapchainKHR(dev.logical, &create_info, nullptr, &swap_chain);
         return swap_chain;
+    }
+
+    VkImageView create_image_view(VkDevice &dev, VkImage &image, VkFormat &format)
+    {
+        VkImageView image_view;
+        VkImageViewCreateInfo create_info(image_view_create_info(image, format));
+        if (vkCreateImageView(dev, &create_info, nullptr, &image_view) != VK_SUCCESS)
+            throw std::runtime_error("failed to create image view\n");
+        return image_view;
+    }
+
+    VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent) {
+        VkFramebufferCreateInfo create_info{framebuffer_create_info(image_attachment, render_pass, extent.width, extent.height)};
+        VkFramebuffer framebuffer;
+        if (vkCreateFramebuffer(dev, &create_info, nullptr, &framebuffer) != VK_SUCCESS)
+            throw std::runtime_error("failed to create framebuffer\n");
+        return framebuffer;
     }
 }

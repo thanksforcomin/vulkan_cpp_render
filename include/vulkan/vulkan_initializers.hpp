@@ -23,5 +23,9 @@ namespace vulkan {
 
     VkQueue create_queue(vulkan_device &vulkan_dev, uint32_t queue_family_index);
     
-    VkSwapchainKHR create_swap_chain(vulkan_device &vulkan_dev, VkSurfaceKHR &surface);
+    VkSwapchainKHR create_swap_chain(vulkan_device &vulkan_dev, VkSurfaceKHR &surface, GLFWwindow *window);
+
+    VkImageView create_image_view(VkDevice &dev, VkImage &image, VkFormat &format);
+
+    VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent);
 }
