@@ -2,6 +2,8 @@
 
 #include "include/engine/swap_chain.hpp"
 
+#include "include/vulkan/vulkan_initializers.hpp"
+
 #include "vk_mem_alloc.h"
 
 #include <string>
@@ -40,7 +42,7 @@ namespace engine {
             VkPhysicalDevice load_phys_device();
             VkDevice load_logical_device(VkPhysicalDevice& dev);
             VkSurfaceKHR load_surface();
-            vulkan_device load_device();
+            vulkan::vulkan_device load_device();
             VkQueue load_device_queue(const vulkan_device& dev, queue_families family = queue_families::GRAPHICS);
             VkInstance init_vulkan();
             void set_debug_messenger();
@@ -48,15 +50,15 @@ namespace engine {
 
         public: //i have no possible idea how to make it better
             //window first (we need extensions)
-            Window window;
+            GLFWwindow* game_window;
             //Vulkan instance second
             VkInstance instance;
             //Surface then
             VkSurfaceKHR surface;
-            //family indicies
-            QueueFamilyIndicies queue_family;
             // Physical and logical devices
-            const vulkan_device device;
+            vulkan::vulkan_device device;
+            //family indicies
+            vulkan::queue_family_indicies queue_family;
             //Queues 
             const VkQueue graphics_queue;
             const VkQueue present_queue;

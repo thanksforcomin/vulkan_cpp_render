@@ -1,6 +1,7 @@
 #include "include/engine/vulkan_context.hpp"
 #include "include/engine/shader.hpp"
 #include "include/engine/pipeline.hpp"
+#include "include/vulkan/vulkan_utils.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -18,13 +19,13 @@ Redesign Window class to be static, design the queue_family to be in two separat
 
 namespace engine
 {
-    VulkanContext::VulkanContext() : window(),
-                                     instance(init_vulkan()),
-                                     surface(load_surface()),
-                                     queue_family(find_queue_family(device.physical)),
+    VulkanContext::VulkanContext() : game_window(glfw::create_window(720, 720)),
+                                     instance(vulkan::create_instance("minivan")),
+                                     surface(vulkan::create_surface(instance, game_window)),
                                      device(load_device()),
-                                     graphics_queue(load_device_queue(device, queue_families::GRAPHICS)),
-                                     present_queue(load_device_queue(device, queue_families::PRESENT)),
+                                     queue_family(vulkan::find_queue_family(device.physical, surface)),
+                                     graphics_queue(vulkan::create_queue(device.logical, queue_family.graphics_family.value())),
+                                     present_queue(vulkan::create_queue(device.logical, queue_family.present_family.value())),
                                      swap_chain(this)
     {
         create_allocator();
@@ -160,21 +161,17 @@ namespace engine
     {
         VkSurfaceKHR res;
 
-        if (glfwCreateWindowSurface(instance, window.window_ptr.get(), nullptr, &res) != VK_SUCCESS)
-        {
+        if (glfwCreateWindowSurface(instance, game_window, nullptr, &res) != VK_SUCCESS)
             throw std::runtime_error("failed to create window surface\n");
-        }
         else
-        {
             return res;
-        }
     }
 
-    vulkan_device VulkanContext::load_device()
+    vulkan::vulkan_device VulkanContext::load_device()
     {
-        vulkan_device dev;
-        dev.physical = load_phys_device();
-        dev.logical = load_logical_device(dev.physical);
+        vulkan::vulkan_device dev;
+        dev.physical = vulkan::create_physical_device(instance, surface);
+        dev.logical = vulkan::create_logical_device(dev.physical, surface);
         std::cout << "device created\n";
         return dev;
     }

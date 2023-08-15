@@ -50,7 +50,7 @@ int main() {
     engine::DescriptorSet camera_descriptor(&context);
 
     //main loop
-    while(context.window.is_alive()) {
+    while(!glfwWindowShouldClose(context.game_window)) {
         std::unique_ptr<engine::Frame> &frame = frames[(curr_frame++)%2];
 
         frame->wait_for_fence();

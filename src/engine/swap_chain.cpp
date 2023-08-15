@@ -86,7 +86,7 @@ namespace engine {
             return capabilities.currentExtent;
         else {
             int width, height;
-            glfwGetFramebufferSize(vulkan_context->window.window_ptr.get(), &width, &height);
+            glfwGetFramebufferSize(vulkan_context->game_window, &width, &height);
             std::cout << "framebuffer size: " << width << " x " << height << "\n";
 
             VkExtent2D new_extent = {

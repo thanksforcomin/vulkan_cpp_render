@@ -5,6 +5,19 @@
 #include <iostream>
 #include <set>
 
+namespace glfw {
+    GLFWwindow* create_window(uint32_t height, uint32_t width) {
+        if(!glfwInit()) throw std::runtime_error("funky!\n GLFW is not inited");
+
+        if(!glfwVulkanSupported()) throw std::runtime_error("funky!\n vulkan is not supported");
+
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+        return glfwCreateWindow(width, height, "Vulkan", nullptr, nullptr);
+    }
+}
+
 namespace vulkan {
     /*
      * Creates a Vulkan surface for a GLFW window.
@@ -22,6 +35,9 @@ namespace vulkan {
     VkInstance create_instance(std::string applicaion_name) {
         std::vector<const char *> required_extensions = require_extensions();
         std::vector<const char *> validation_layers{"VK_LAYER_KHRONOS_validation"};
+
+        if(!validation_layers_support(validation_layers))
+            throw std::runtime_error("validation layers are not supported");
 
         VkApplicationInfo appInfo{}; // general info
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -106,9 +122,9 @@ namespace vulkan {
         return log_dev;
     }
 
-    VkQueue create_queue(vulkan_device &dev, uint32_t queue_family_index) {
+    VkQueue create_queue(VkDevice &dev, uint32_t queue_family_index) {
         VkQueue queue;
-        vkGetDeviceQueue(dev.logical, queue_family_index, 0, &queue);
+        vkGetDeviceQueue(dev, queue_family_index, 0, &queue);
         return queue;
     }
 

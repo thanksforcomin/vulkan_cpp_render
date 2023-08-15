@@ -2,6 +2,7 @@
 
 #include <set>
 #include <string>
+#include <cstring>
 #include <limits>
 #include <algorithm>
 
@@ -47,6 +48,32 @@ namespace vulkan {
         }
 
         return required_extensions.empty();
+    }
+
+    bool validation_layers_support(std::vector<const char *> validation_layers) {
+        uint32_t layers_count;
+        vkEnumerateInstanceLayerProperties(&layers_count, nullptr);
+
+        std::vector<VkLayerProperties> available_layers(layers_count);
+        vkEnumerateInstanceLayerProperties(&layers_count, &available_layers[0]);
+
+        for (const char *layer_name : validation_layers)
+        {
+            bool layer_found = false;
+            for (const auto &layer_properties : available_layers)
+            {
+                if (std::strcmp(layer_name, layer_properties.layerName) == 0)
+                {
+                    layer_found = true;
+                    break;
+                }
+            }
+
+            if (!layer_found)
+                return false;
+        }
+
+        return true;
     }
 
     swap_chain_support_details get_swap_chain_support(VkPhysicalDevice &dev, VkSurfaceKHR &surface) {

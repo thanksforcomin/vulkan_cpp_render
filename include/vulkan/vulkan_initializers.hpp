@@ -21,7 +21,7 @@ namespace vulkan {
 
     VkDevice create_logical_device(VkPhysicalDevice &dev, VkSurfaceKHR &surface);
 
-    VkQueue create_queue(vulkan_device &vulkan_dev, uint32_t queue_family_index);
+    VkQueue create_queue(VkDevice &dev, uint32_t queue_family_index);
     
     VkSwapchainKHR create_swap_chain(vulkan_device &vulkan_dev, VkSurfaceKHR &surface, GLFWwindow *window);
 

@@ -12,6 +12,8 @@ namespace vulkan {
 
     bool device_extensions_support(VkPhysicalDevice &dev, std::vector<const char*> extensions);
 
+    bool validation_layers_support(std::vector<const char *> validation_layers);
+
     swap_chain_support_details get_swap_chain_support(VkPhysicalDevice &dev, VkSurfaceKHR &surface);
     
     queue_family_indicies find_queue_family(VkPhysicalDevice &dev, VkSurfaceKHR &surface);
