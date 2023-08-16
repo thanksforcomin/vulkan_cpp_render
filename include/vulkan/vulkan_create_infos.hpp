@@ -21,6 +21,9 @@ namespace vulkan {
     VkSwapchainCreateInfoKHR swap_chain_create_info(GLFWwindow *window, 
                                                     uint32_t min_image_count,
                                                     swap_chain_support_details swap_chain_support,
+                                                    VkSurfaceFormatKHR format,
+                                                    VkExtent2D extent,
+                                                    VkPresentModeKHR present_mode,
                                                     VkSurfaceKHR &surface, 
                                                     std::vector<uint32_t> queue_family_indicies,
                                                     VkSwapchainKHR old_swap_chain = VK_NULL_HANDLE);
@@ -29,7 +32,7 @@ namespace vulkan {
                                                  VkFormat format,
                                                  VkImageViewType view_type = VK_IMAGE_VIEW_TYPE_2D, 
                                                  uint32_t layers = 1, 
-                                                 uint32_t levels = 0);
+                                                 uint32_t levels = 1);
 
     VkFramebufferCreateInfo framebuffer_create_info(VkImageView *image_view, 
                                                     VkRenderPass &render_pass,

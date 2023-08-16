@@ -59,7 +59,7 @@ int main() {
         //std::cout << curr_frame << "\n"; //debug purposes
         frame->command_dispatcher.reset();
 
-        main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index).data;
+        main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index);
 
         /*vkBeginCommandBuffer(frame->command_buffer, &frame->command_buffer_begin_info);
         vkCmdBeginRenderPass(frame.command_buffer, &main_render_pass.begin_info, VK_SUBPASS_CONTENTS_INLINE);

@@ -37,11 +37,13 @@ namespace vulkan {
     VkSwapchainCreateInfoKHR swap_chain_create_info(GLFWwindow *window,
                                                     uint32_t min_image_count,
                                                     swap_chain_support_details swap_chain_support,
+                                                    VkSurfaceFormatKHR format,
+                                                    VkExtent2D extent,
+                                                    VkPresentModeKHR present_mode,
                                                     VkSurfaceKHR &surface, 
                                                     std::vector<uint32_t> queue_family_indicies,
                                                     VkSwapchainKHR old_swap_chain)
     {
-        VkSurfaceFormatKHR surface_format = choose_format(swap_chain_support.formats);
         bool queue_flag = queue_family_indicies[0] != queue_family_indicies[1];
         
         return {
@@ -50,9 +52,9 @@ namespace vulkan {
             .flags = 0,
             .surface = surface,
             .minImageCount = min_image_count,
-            .imageFormat = surface_format.format,
-            .imageColorSpace = surface_format.colorSpace,
-            .imageExtent = choose_extent(swap_chain_support.capabilities, window),
+            .imageFormat = format.format,
+            .imageColorSpace = format.colorSpace,
+            .imageExtent = extent,
             .imageArrayLayers = 1,
             .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
             .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
@@ -60,7 +62,7 @@ namespace vulkan {
             .pQueueFamilyIndices = queue_flag ? (uint32_t*)&queue_family_indicies : nullptr,
             .preTransform = swap_chain_support.capabilities.currentTransform,
             .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-            .presentMode = choose_present_mode(swap_chain_support.present_modes),
+            .presentMode = present_mode,
             .clipped = VK_TRUE,
             .oldSwapchain = old_swap_chain
         };

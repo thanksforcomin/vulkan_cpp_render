@@ -32,19 +32,12 @@ namespace engine {
 
             VulkanContext();
             ~VulkanContext();
-
-            QueueFamilyIndicies find_queue_family(const VkPhysicalDevice &dev) const;
+            
             void submit(const Frame *fr);
             void present(const Frame *fr, uint32_t *index);
 
         private:
-
-            VkPhysicalDevice load_phys_device();
-            VkDevice load_logical_device(VkPhysicalDevice& dev);
-            VkSurfaceKHR load_surface();
             vulkan::vulkan_device load_device();
-            VkQueue load_device_queue(const vulkan_device& dev, queue_families family = queue_families::GRAPHICS);
-            VkInstance init_vulkan();
             void set_debug_messenger();
             void create_allocator();
 
@@ -68,11 +61,6 @@ namespace engine {
             VmaAllocator allocator;
 
         private:
-            swap_chain_support_details query_swap_chain_support(const VkPhysicalDevice &dev);
-            swap_chain_support_details query_swap_chain_support() const; //for the default single device of the class
-            bool is_device_suitable(VkPhysicalDevice dev);
-            bool device_extension_support(VkPhysicalDevice dev);
-            bool check_validation_layers_support();
             VkResult create_debug_messenger(const VkDebugUtilsMessengerCreateInfoEXT* create_info,
                                             const VkAllocationCallbacks* allocator, 
                                             VkDebugUtilsMessengerEXT* messenger);

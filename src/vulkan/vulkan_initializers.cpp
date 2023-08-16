@@ -128,20 +128,23 @@ namespace vulkan {
         return queue;
     }
 
-    VkSwapchainKHR create_swap_chain(vulkan_device &dev, VkSurfaceKHR &surface, GLFWwindow *window) {
-        queue_family_indicies indicies = find_queue_family(dev.physical, surface);
+    VkSwapchainKHR create_swap_chain(vulkan_device &vulkan_dev, VkSurfaceKHR &surface, queue_family_indicies indicies, swap_chain_support_details support_details, 
+                                     GLFWwindow *window, VkSurfaceFormatKHR format, VkExtent2D extent, VkPresentModeKHR present_mode) {
 
         VkSwapchainCreateInfoKHR create_info{ 
             swap_chain_create_info(window,
-                                   1, 
-                                   get_swap_chain_support(dev.physical, surface), 
-                                   surface, 
+                                   2, 
+                                   support_details, 
+                                   format,
+                                   extent,
+                                   present_mode,
+                                   surface,
                                    {indicies.graphics_family.value(), indicies.present_family.value()}, 
                                    VK_NULL_HANDLE) 
         };
 
         VkSwapchainKHR swap_chain;
-        vkCreateSwapchainKHR(dev.logical, &create_info, nullptr, &swap_chain);
+        vkCreateSwapchainKHR(vulkan_dev.logical, &create_info, nullptr, &swap_chain);
         return swap_chain;
     }
 
