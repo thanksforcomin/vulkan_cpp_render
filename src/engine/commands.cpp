@@ -1,26 +1,51 @@
 #include "include/engine/commands.hpp"
 #include "include/engine/vulkan_context.hpp"
 #include "include/engine/renderpass.hpp"
+#include "include/vulkan/vulkan_initializers.hpp"
+#include "include/vulkan/vulkan_create_infos.hpp"
 
 namespace engine {
-    CommandDispatcher::CommandDispatcher(const VulkanContext *vulkan_context, VkCommandBufferLevel lvl) : 
-        context(vulkan_context), command_buffer_begin_info{get_begin_info(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)} 
+    CommandBuffer::CommandBuffer(VulkanContext *vulkan_context, VkCommandPool command_pool, VkCommandBufferLevel lvl) :
+        context(vulkan_context),
+        pool(&command_pool),
+        command_buffer(vulkan::allocate_command_buffer(context->device.logical, command_pool, lvl)),
+        command_buffer_begin_info(vulkan::command_buffer_begin_info(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT))
     {
-        VkCommandPoolCreateInfo command_pool_create_info = get_create_info(
-            context->queue_family.graphics_family.value()
+
+    }
+
+    CommandBuffer::~CommandBuffer() {
+        vkFreeCommandBuffers(context->device.logical, *pool, 1, &command_buffer);
+    }
+
+    void CommandBuffer::reset() {
+        if(vkResetCommandBuffer(command_buffer, 0) != VK_SUCCESS)
+            throw std::runtime_error("cannot reset main command buffer");
+    }
+
+    void CommandBuffer::begin(VkRenderPassBeginInfo &render_pass_begin_info) {
+        vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info);
+        vkCmdBeginRenderPass(command_buffer, &render_pass_begin_info, 
+                            (command_buffer_level == VK_COMMAND_BUFFER_LEVEL_PRIMARY
+                            ? VK_SUBPASS_CONTENTS_INLINE : VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS)
         );
-        if(vkCreateCommandPool(context->device.logical, &command_pool_create_info, nullptr, &command_pool) != VK_SUCCESS)
-            throw std::runtime_error("failed to create command pool");
+    }
 
-        VkCommandBufferAllocateInfo command_buffer_alloc_info{};
-        command_buffer_alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        command_buffer_alloc_info.pNext = nullptr;
-        command_buffer_alloc_info.commandPool = command_pool;
-        command_buffer_alloc_info.commandBufferCount = 1;
-        command_buffer_alloc_info.level = lvl; //this is the buffer that we will submit as secondary to the main frame buffer
+    void CommandBuffer::end() {
+        vkEndCommandBuffer(command_buffer);
+        vkEndCommandBuffer(command_buffer);
+    }
+}
 
-        if (vkAllocateCommandBuffers(context->device.logical, &command_buffer_alloc_info, &command_buffer) != VK_SUCCESS)
-            throw std::runtime_error("cannot allocate main command buffer");
+namespace engine {
+    CommandDispatcher::CommandDispatcher(VulkanContext *vulkan_context, VkCommandBufferLevel lvl) : 
+        context(vulkan_context), 
+        command_buffer_begin_info{vulkan::command_buffer_begin_info(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)},
+        command_pool(vulkan::create_command_pool(context->device.logical, 
+                                                 VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, 
+                                                 context->queue_family.graphics_family.value()))
+    {
+
     }
 
     CommandDispatcher::CommandDispatcher(CommandDispatcher &&cmd) :
@@ -47,31 +72,7 @@ namespace engine {
         vkCmdEndRenderPass(command_buffer);
         vkEndCommandBuffer(command_buffer);
     }
-
-    inline VkCommandBufferBeginInfo CommandDispatcher::get_begin_info(VkCommandBufferUsageFlags flags) {
-        return VkCommandBufferBeginInfo {
-            VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-            nullptr,
-            flags,
-            nullptr
-        };
-    };
-
-    inline VkCommandPoolCreateInfo CommandDispatcher::get_create_info(uint32_t queue_fam_index, VkCommandPoolCreateFlags flags) {
-        return VkCommandPoolCreateInfo {
-            VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-            nullptr,
-            flags,
-            queue_fam_index
-        };
-    }
-
-    inline VkCommandBufferAllocateInfo CommandDispatcher::get_alloc_info(VkCommandPool &pool, uint32_t count, VkCommandBufferLevel level) {
-        return VkCommandBufferAllocateInfo {
-
-        };
-    }
-
+    
     CommandDispatcher::~CommandDispatcher() {
         if(command_pool)
             vkDestroyCommandPool(context->device.logical, command_pool, nullptr);

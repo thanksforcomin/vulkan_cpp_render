@@ -164,4 +164,23 @@ namespace vulkan {
             throw std::runtime_error("failed to create framebuffer\n");
         return framebuffer;
     }
+
+    VkCommandPool create_command_pool(VkDevice &dev, VkCommandPoolCreateFlags flags = 0, uint32_t queue_family_index) {
+        VkCommandPoolCreateInfo create_info{command_pool_create_info(queue_family_index, flags)};
+        VkCommandPool command_pool;
+        
+        if(vkCreateCommandPool(dev, &create_info, nullptr, &command_pool) != VK_SUCCESS)
+            throw std::runtime_error("failed to create command pool\n");
+        return command_pool;
+    }
+
+    VkCommandBuffer allocate_command_buffer(VkDevice &dev, VkCommandPool &command_pool, VkCommandBufferLevel level, uint32_t count) {
+        VkCommandBufferAllocateInfo create_info{command_buffer_allocate_info(command_pool, level, count)};
+        VkCommandBuffer command_buffer;
+
+        if (vkAllocateCommandBuffers(dev, &create_info, &command_buffer) != VK_SUCCESS)
+            throw std::runtime_error("cannot allocate main command buffer");
+
+        return command_buffer;
+    }
 }

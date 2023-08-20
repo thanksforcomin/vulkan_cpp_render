@@ -2,7 +2,7 @@
 #include "include/vulkan/vulkan_utils.hpp"
 
 namespace vulkan {
-    VkInstanceCreateInfo instance_create_info(VkApplicationInfo *app, 
+    inline VkInstanceCreateInfo instance_create_info(VkApplicationInfo *app, 
                                               const std::vector<const char*> &val_layer, 
                                               const std::vector<const char*> &extensions) 
     {
@@ -18,7 +18,7 @@ namespace vulkan {
         };
     }
 
-    VkDeviceCreateInfo logical_device_create_info(VkPhysicalDeviceFeatures *features,
+    inline VkDeviceCreateInfo logical_device_create_info(VkPhysicalDeviceFeatures *features,
                                                 const std::vector<VkDeviceQueueCreateInfo> &queue_infos,
                                                 const std::vector<const char*> &extensions)
     {
@@ -34,7 +34,7 @@ namespace vulkan {
         };
     }
 
-    VkSwapchainCreateInfoKHR swap_chain_create_info(GLFWwindow *window,
+    inline VkSwapchainCreateInfoKHR swap_chain_create_info(GLFWwindow *window,
                                                     uint32_t min_image_count,
                                                     swap_chain_support_details swap_chain_support,
                                                     VkSurfaceFormatKHR format,
@@ -68,7 +68,7 @@ namespace vulkan {
         };
     }
 
-    VkImageViewCreateInfo image_view_create_info(VkImage &image, 
+    inline VkImageViewCreateInfo image_view_create_info(VkImage &image, 
                                                  VkFormat format,
                                                  VkImageViewType view_type, 
                                                  uint32_t layers, 
@@ -97,7 +97,7 @@ namespace vulkan {
         };
     }
 
-    VkFramebufferCreateInfo framebuffer_create_info(VkImageView *image_view, 
+    inline VkFramebufferCreateInfo framebuffer_create_info(VkImageView *image_view, 
                                                     VkRenderPass &render_pass,
                                                     uint32_t width,
                                                     uint32_t height,
@@ -114,4 +114,35 @@ namespace vulkan {
             .pAttachments = image_view
         };
     }
+
+    inline VkCommandPoolCreateInfo command_pool_create_info(uint32_t queue_fam_index, VkCommandPoolCreateFlags flags) {
+        return VkCommandPoolCreateInfo {
+            VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            nullptr,
+            flags,
+            queue_fam_index
+        };
+    };
+
+    inline VkCommandBufferAllocateInfo command_buffer_allocate_info(VkCommandPool &pool, 
+                                                                    VkCommandBufferLevel level, 
+                                                                    uint32_t count)
+    {
+        return VkCommandBufferAllocateInfo {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+            .pNext = nullptr,
+            .commandPool = pool,
+            .level = level,
+            .commandBufferCount = count
+        };
+    };
+
+    inline VkCommandBufferBeginInfo command_buffer_begin_info(VkCommandBufferUsageFlags flags) {
+        return VkCommandBufferBeginInfo {
+            VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            nullptr,
+            flags,
+            nullptr
+        };
+    };
 }

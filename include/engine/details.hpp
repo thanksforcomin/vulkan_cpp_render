@@ -23,42 +23,7 @@ namespace engine {
         seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
     } // i have no idea what this code does it's just boost hasher
 
-    struct swap_chain_support_details {
-        VkSurfaceCapabilitiesKHR capabilities;
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR> present_modes;
-    };
-
-    struct QueueFamilyIndicies
-    {
-        std::optional<uint32_t> graphics_family;
-        std::optional<uint32_t> present_family;
-        
-        bool is_complete() { return (graphics_family.has_value() && present_family.has_value()); }
-    };
-
-    struct vulkan_device {
-        VkPhysicalDevice physical;
-        VkDevice logical;
-    };
-
-    enum class queue_families {
-        GRAPHICS, PRESENT
-    };
-
     //functions
-    /*VkFormat find_supported_format(std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags flags, vulkan_device device){
-        for(auto& format : candidates) {
-            VkFormatProperties properties;
-            vkGetPhysicalDeviceFormatProperties(device.physical, format, &properties);
-
-            if(tiling == VK_IMAGE_TILING_LINEAR && (properties.linearTilingFeatures & flags) == flags)
-                return format;
-            if(tiling == VK_IMAGE_TILING_OPTIMAL && (properties.linearTilingFeatures & flags) == flags)
-                return format;
-        }
-        throw std::runtime_error("unable to find supported format");
-    };*/
 
     inline VkAttachmentDescription default_attachment(VkFormat format) {
         VkAttachmentDescription color_attachment{};

@@ -29,4 +29,8 @@ namespace vulkan {
     VkImageView create_image_view(VkDevice &dev, VkImage &image, VkFormat &format);
 
     VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent);
+
+    VkCommandPool create_command_pool(VkDevice &dev, VkCommandPoolCreateFlags flags = 0, uint32_t queue_family_index);
+
+    VkCommandBuffer allocate_command_buffer(VkDevice &dev, VkCommandPool &command_pool, VkCommandBufferLevel level, uint32_t count = 1);
 }

@@ -9,14 +9,28 @@ namespace engine {
     class CommandBuffer {
         private:
             VulkanContext *context;
+            VkCommandPool *pool;
 
         public:
-            CommandBuffer(VulkanContext *vulkan_context);
+            CommandBuffer(VulkanContext *vulkan_context, VkCommandPool command_pool, VkCommandBufferLevel lvl = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
+            void begin(VkRenderPassBeginInfo &render_pass_begin_info);
+            void end();
+            void reset();
+
+            const VkCommandBuffer command_buffer;
+
+        private:
+            VkCommandBufferBeginInfo command_buffer_begin_info;
+            VkCommandBufferLevel command_buffer_level;
     };
 
     class CommandDispatcher {
+        private:
+            VulkanContext *context;
+
         public:
-            CommandDispatcher(const VulkanContext *vulkan_context, VkCommandBufferLevel lvl = VK_COMMAND_BUFFER_LEVEL_SECONDARY);
+            CommandDispatcher(VulkanContext *vulkan_context, VkCommandBufferLevel lvl = VK_COMMAND_BUFFER_LEVEL_SECONDARY);
             CommandDispatcher(CommandDispatcher const& cmd) = default;
             CommandDispatcher(CommandDispatcher &&cmd);
             ~CommandDispatcher();
@@ -28,14 +42,5 @@ namespace engine {
             VkCommandPool command_pool;
             VkCommandBuffer command_buffer;
             VkCommandBufferBeginInfo command_buffer_begin_info;
-
-        private:
-            const VulkanContext *context;
-
-            inline VkCommandBufferBeginInfo get_begin_info(VkCommandBufferUsageFlags flags = 0);
-            inline VkCommandPoolCreateInfo get_create_info(uint32_t queue_fam_index, VkCommandPoolCreateFlags flags = 0);
-            inline VkCommandBufferAllocateInfo get_alloc_info(VkCommandPool &pool, 
-                                                              uint32_t count = 1, 
-                                                              VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     };
 }
