@@ -57,7 +57,7 @@ int main() {
 
         uint32_t swap_chain_image_index = context.swap_chain.query_next_image(frame->present_semaphore);
         //std::cout << curr_frame << "\n"; //debug purposes
-        frame->command_dispatcher.reset();
+        frame->command_buffer.reset();
 
         main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index);
 
@@ -66,8 +66,8 @@ int main() {
         vkCmdEndRenderPass(frame.command_buffer);
         vkEndCommandBuffer(frame.command_buffer);*/
 
-        frame->command_dispatcher.begin(main_render_pass);
-        frame->command_dispatcher.end();
+        frame->command_buffer.begin(main_render_pass.begin_info);
+        frame->command_buffer.end();
 
         context.submit(frame.get());
         context.present(frame.get(), &swap_chain_image_index);

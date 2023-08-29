@@ -2,6 +2,8 @@
 
 #include "include/engine/details.hpp"
 #include "include/engine/buffers.hpp"
+#include "include/vulkan/vulkan_utils.hpp"
+#include "include/vulkan/vulkan_initializers.hpp"
 
 #include <iostream>
 #include <vector>
@@ -11,11 +13,11 @@ namespace engine {
 
     class DescriptorPool {
         private:
-            VulkanContext const* context;
+            VulkanContext *context;
             std::vector<VkDescriptorPoolSize> pool_sizes;
         
         public:
-            DescriptorPool(VulkanContext const* vulkan_context);
+            DescriptorPool(VulkanContext *vulkan_context);
             ~DescriptorPool();
 
             VkDescriptorPool pool;
@@ -26,7 +28,7 @@ namespace engine {
 
     class DescriptorSet {
         private:
-            VulkanContext const* context;   
+            VulkanContext *context;   
 
             std::vector<VkDescriptorSetLayoutBinding> bindings;
             
@@ -46,20 +48,9 @@ namespace engine {
             
             template<typename T>
             void push_buffer_binding(UniformBuffer<T>& buffer, VkDescriptorType type, uint32_t binding) {
-                descriptor_buffers.push_back(VkDescriptorBufferInfo{});
-                VkDescriptorBufferInfo &buffer_info = descriptor_buffers.back();
-                buffer_info.buffer = buffer.buffer;
-                buffer_info.offset = 0;
-                buffer_info.range = sizeof(T);
+                descriptor_buffers.push_back(vulkan::get_buffer_info(buffer.buffer, buffer.size));
 
-                write_descriptor_sets.push_back(VkWriteDescriptorSet{});
-                VkWriteDescriptorSet &descriptor_write = write_descriptor_sets.back();
-                descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptor_write.dstSet = descriptor_set;
-                descriptor_write.dstBinding = binding;
-                descriptor_write.descriptorCount = 1;
-                descriptor_write.pBufferInfo = &buffer_info;
-                descriptor_write.descriptorType = type;
+                write_descriptor_sets.push_back(vulkan::get_descriptor_write_info(type, descriptor_set, binding, descriptor_buffers.back()));
             }
             //void push_texture_binding(); //TODO
             void update_buffers();

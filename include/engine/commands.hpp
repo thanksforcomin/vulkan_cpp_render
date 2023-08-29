@@ -13,34 +13,31 @@ namespace engine {
 
         public:
             CommandBuffer(VulkanContext *vulkan_context, VkCommandPool command_pool, VkCommandBufferLevel lvl = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+            CommandBuffer(CommandBuffer const &buff) = default;
+            CommandBuffer(CommandBuffer &&buff);
+            ~CommandBuffer();
 
             void begin(VkRenderPassBeginInfo &render_pass_begin_info);
             void end();
             void reset();
 
-            const VkCommandBuffer command_buffer;
+            VkCommandBuffer command_buffer;
 
         private:
             VkCommandBufferBeginInfo command_buffer_begin_info;
             VkCommandBufferLevel command_buffer_level;
     };
 
-    class CommandDispatcher {
+    class CommandPool {
         private:
             VulkanContext *context;
 
-        public:
-            CommandDispatcher(VulkanContext *vulkan_context, VkCommandBufferLevel lvl = VK_COMMAND_BUFFER_LEVEL_SECONDARY);
-            CommandDispatcher(CommandDispatcher const& cmd) = default;
-            CommandDispatcher(CommandDispatcher &&cmd);
-            ~CommandDispatcher();
-
-            void reset();
-            void begin(const RenderPass &rp);
-            void end();
+        public: 
+            CommandPool(VulkanContext *vulkan_context, VkCommandPoolCreateFlags flags = 0);
+            CommandPool(CommandPool const &pool) = default;
+            CommandPool(CommandPool &&pool);
+            ~CommandPool();
 
             VkCommandPool command_pool;
-            VkCommandBuffer command_buffer;
-            VkCommandBufferBeginInfo command_buffer_begin_info;
     };
 }

@@ -108,7 +108,7 @@ namespace engine
         submit.pSignalSemaphores = &fr->graphics_semaphore;
 
         submit.commandBufferCount = 1;
-        submit.pCommandBuffers = &fr->command_dispatcher.command_buffer;
+        submit.pCommandBuffers = &fr->command_buffer.command_buffer;
 
         if (vkQueueSubmit(graphics_queue, 1, &submit, fr->fence) != VK_SUCCESS)
             throw std::runtime_error("cannot submit a frame");

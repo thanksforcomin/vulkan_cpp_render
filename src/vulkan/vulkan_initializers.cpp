@@ -50,7 +50,7 @@ namespace vulkan {
         std::cout << "minivan" << " "
                 << " 1, 0, 0 \n";
 
-        VkInstanceCreateInfo createInfo = instance_create_info(&appInfo, validation_layers, required_extensions);
+        VkInstanceCreateInfo createInfo = vulkan::instance_create_info(&appInfo, validation_layers, required_extensions);
         VkInstance inst;
 
         if(vkCreateInstance(&createInfo, nullptr, &inst) != VK_SUCCESS) 
@@ -112,7 +112,7 @@ namespace vulkan {
             queue_create_infos.push_back(queue_create_info);
         }
 
-        VkDeviceCreateInfo create_info = logical_device_create_info(&device_fetures, queue_create_infos, required_device_extensions); // logical device create info
+        VkDeviceCreateInfo create_info = vulkan::logical_device_create_info(&device_fetures, queue_create_infos, required_device_extensions); // logical device create info
 
         // i have no idea what im doing please help
         VkDevice log_dev;
@@ -165,7 +165,7 @@ namespace vulkan {
         return framebuffer;
     }
 
-    VkCommandPool create_command_pool(VkDevice &dev, VkCommandPoolCreateFlags flags = 0, uint32_t queue_family_index) {
+    VkCommandPool create_command_pool(VkDevice &dev, VkCommandPoolCreateFlags flags, uint32_t queue_family_index) {
         VkCommandPoolCreateInfo create_info{command_pool_create_info(queue_family_index, flags)};
         VkCommandPool command_pool;
         
@@ -182,5 +182,29 @@ namespace vulkan {
             throw std::runtime_error("cannot allocate main command buffer");
 
         return command_buffer;
+    }
+
+    VkDescriptorSetLayout create_descriptor_set_layout(VkDevice &dev, std::vector<VkDescriptorSetLayoutBinding> bindings) {
+        VkDescriptorSetLayoutCreateInfo create_info{descriptor_set_layout_create_info(&bindings[0], bindings.size())};
+        VkDescriptorSetLayout layout;
+        if (vkCreateDescriptorSetLayout(dev, &create_info, nullptr, &layout) != VK_SUCCESS)
+            throw std::runtime_error("failed to create descriptor set layout\n");
+        return layout;
+    }
+
+    VkDescriptorSet allocate_descriptor_set(VkDevice &dev, VkDescriptorPool &pool, VkDescriptorSetLayout &layout) {
+        VkDescriptorSetAllocateInfo create_info{descriptor_set_allocate_info(pool, &layout)};
+        VkDescriptorSet descriptor_set;
+        if (vkAllocateDescriptorSets(dev, &create_info, &descriptor_set) != VK_SUCCESS)
+            throw std::runtime_error("failed to allocate descriptor set\n");
+        return descriptor_set;
+    }
+
+    VkDescriptorPool create_descriptor_pool(VkDevice &dev, std::vector<VkDescriptorPoolSize> pool_sizes, uint32_t max_sets) {
+        VkDescriptorPoolCreateInfo create_info{descriptor_pool_create_info(&pool_sizes[0], pool_sizes.size(), max_sets)};
+        VkDescriptorPool descriptor_pool;
+        if (vkCreateDescriptorPool(dev, &create_info, nullptr, &descriptor_pool) != VK_SUCCESS)
+            throw std::runtime_error("failed to create descriptor pool\n");
+        return descriptor_pool;
     }
 }

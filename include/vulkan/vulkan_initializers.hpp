@@ -30,7 +30,13 @@ namespace vulkan {
 
     VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent);
 
-    VkCommandPool create_command_pool(VkDevice &dev, VkCommandPoolCreateFlags flags = 0, uint32_t queue_family_index);
+    VkCommandPool create_command_pool(VkDevice &dev, VkCommandPoolCreateFlags flags, uint32_t queue_family_index);
 
     VkCommandBuffer allocate_command_buffer(VkDevice &dev, VkCommandPool &command_pool, VkCommandBufferLevel level, uint32_t count = 1);
+
+    VkDescriptorSetLayout create_descriptor_set_layout(VkDevice &dev, std::vector<VkDescriptorSetLayoutBinding> bindings);
+
+    VkDescriptorSet allocate_descriptor_set(VkDevice &dev, VkDescriptorPool &pool, VkDescriptorSetLayout &layout);
+
+    VkDescriptorPool create_descriptor_pool(VkDevice &dev, std::vector<VkDescriptorPoolSize> pool_sizes, uint32_t max_sets);
 }

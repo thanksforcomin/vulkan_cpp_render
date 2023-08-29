@@ -26,12 +26,6 @@ namespace engine {
         std::cout << "framebuffer successfully created\n";
     }
 
-    Framebuffer::Framebuffer(const VulkanContext *vulkan_context, VkFramebufferCreateInfo create_info) : context(vulkan_context) {
-        if(vkCreateFramebuffer(vulkan_context->device.logical, &create_info, nullptr, &data) != VK_SUCCESS) {
-            throw std::runtime_error("error when creating framebuffer");
-        }
-    }
-
     Framebuffer::~Framebuffer()
     {
         //vkDestroyFramebuffer(context->device.logical, data, nullptr);

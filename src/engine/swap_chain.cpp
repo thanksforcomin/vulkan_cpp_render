@@ -1,6 +1,5 @@
 #include "include/engine/swap_chain.hpp"
 #include "include/engine/vulkan_context.hpp"
-#include "include/vulkan/vulkan_initializers.hpp"
 #include "include/vulkan/vulkan_utils.hpp"
 
 #include <cstdint>
@@ -43,24 +42,6 @@ namespace engine {
     }
 
     void SwapChain::create_framebuffers(RenderPass &render_pass) {
-        /*swap_chain_framebuffers.reserve(swap_chain_image_views.size());
-        for (int i = 0; i < swap_chain_image_views.size(); i++)
-        {
-            VkFramebufferCreateInfo create_info{};
-            create_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            create_info.pNext = nullptr;
-            create_info.renderPass = render_pass.data;
-            create_info.attachmentCount = 1;
-            create_info.width = swap_chain_extent.width;
-            create_info.height = swap_chain_extent.height;
-            create_info.layers = 1;
-
-            for (int i = 0; i < swap_chain_image_views.size(); i++) {
-                create_info.pAttachments = &swap_chain_image_views[i];
-                swap_chain_framebuffers.push_back(Framebuffer(vulkan_context, create_info));
-            }
-        }*/
-
         for (VkImageView& image_view : swap_chain_image_views) {
             swap_chain_framebuffers.push_back(
                 vulkan::create_framebuffer(vulkan_context->device.logical, render_pass.data, &image_view, swap_chain_extent)

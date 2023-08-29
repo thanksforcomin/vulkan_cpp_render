@@ -60,7 +60,7 @@ namespace engine {
         create_info.pDynamicState = config.dynamic_state_info.get();
         create_info.layout = pipeline_layout;
         create_info.renderPass = render_pass.data;
-        create_info.subpass = 9;
+        create_info.subpass = 0;
         create_info.basePipelineHandle = VK_NULL_HANDLE;
         create_info.basePipelineIndex = -1; //i have no idea what this line is doing
         create_info.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
@@ -73,7 +73,11 @@ namespace engine {
 }
 
 namespace engine {
-    Frame::Frame(const VulkanContext *vulkan_context) : context(vulkan_context), command_dispatcher(vulkan_context, VK_COMMAND_BUFFER_LEVEL_PRIMARY) {
+    Frame::Frame(VulkanContext *vulkan_context) : 
+        context(vulkan_context), 
+        command_pool(context, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT),
+        command_buffer(context, command_pool.command_pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY)
+    {
         VkFenceCreateInfo fence_create_info{};
         fence_create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fence_create_info.pNext = nullptr;
@@ -97,7 +101,8 @@ namespace engine {
         fence{fr.fence},
         present_semaphore{fr.present_semaphore},
         graphics_semaphore{fr.graphics_semaphore},
-        command_dispatcher(fr.command_dispatcher),
+        command_buffer(fr.command_buffer),
+        command_pool(fr.command_pool),
         context(fr.context)
     {
         
@@ -107,7 +112,8 @@ namespace engine {
         fence{fr.fence},
         present_semaphore{fr.present_semaphore},
         graphics_semaphore{fr.graphics_semaphore},
-        command_dispatcher(fr.command_dispatcher),
+        command_buffer(fr.command_buffer),
+        command_pool(fr.command_pool),
         context(std::move(fr.context))
     {
         fr.fence = NULL;
