@@ -13,7 +13,7 @@ namespace engine {
         VkFramebufferCreateInfo create_info{};
         create_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         create_info.pNext = nullptr;
-        create_info.renderPass = render_pass.data;
+        create_info.renderPass = render_pass.render_pass;
         create_info.attachmentCount = 1;
         create_info.width = width;
         create_info.height = height;

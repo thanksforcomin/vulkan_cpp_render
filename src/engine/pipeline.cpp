@@ -59,7 +59,7 @@ namespace engine {
         create_info.pColorBlendState = config.color_blend_state.get();
         create_info.pDynamicState = config.dynamic_state_info.get();
         create_info.layout = pipeline_layout;
-        create_info.renderPass = render_pass.data;
+        create_info.renderPass = render_pass.render_pass;
         create_info.subpass = 0;
         create_info.basePipelineHandle = VK_NULL_HANDLE;
         create_info.basePipelineIndex = -1; //i have no idea what this line is doing
@@ -76,24 +76,11 @@ namespace engine {
     Frame::Frame(VulkanContext *vulkan_context) : 
         context(vulkan_context), 
         command_pool(context, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT),
-        command_buffer(context, command_pool.command_pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY)
+        command_buffer(context, command_pool.command_pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY),
+        fence(vulkan::create_fence(context->device.logical)),
+        present_semaphore(vulkan::create_semaphore(context->device.logical)),
+        graphics_semaphore(vulkan::create_semaphore(context->device.logical))
     {
-        VkFenceCreateInfo fence_create_info{};
-        fence_create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fence_create_info.pNext = nullptr;
-        fence_create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-        if(vkCreateFence(context->device.logical, &fence_create_info, nullptr, &fence) != VK_SUCCESS)
-            throw std::runtime_error("failed to create fence");
-
-        VkSemaphoreCreateInfo semop_create_info{};
-        semop_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-        semop_create_info.pNext = nullptr;
-        semop_create_info.flags = 0;
-        if (vkCreateSemaphore(context->device.logical, &semop_create_info, nullptr, &present_semaphore) != VK_SUCCESS)
-            throw std::runtime_error("failed to create semaphore");
-        if(vkCreateSemaphore(context->device.logical, &semop_create_info, nullptr, &graphics_semaphore) != VK_SUCCESS)
-            throw std::runtime_error("failed to create semaphore");
-
         std::cout << "frame created\n";
     }
 

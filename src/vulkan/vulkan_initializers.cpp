@@ -207,4 +207,32 @@ namespace vulkan {
             throw std::runtime_error("failed to create descriptor pool\n");
         return descriptor_pool;
     }
+
+    VkFence create_fence(VkDevice &dev, VkFenceCreateFlags flags) {
+        VkFenceCreateInfo create_info{fence_create_info(flags)};
+        VkFence fence;
+        if (vkCreateFence(dev, &create_info, nullptr, &fence) != VK_SUCCESS)
+            throw std::runtime_error("failed to create fence\n");
+        return fence;
+    }
+
+    VkSemaphore create_semaphore(VkDevice &dev, VkSemaphoreCreateFlags flags) {
+        VkSemaphoreCreateInfo create_info{semaphore_create_info(flags)};
+        VkSemaphore semaphore;
+        if (vkCreateSemaphore(dev, &create_info, nullptr, &semaphore) != VK_SUCCESS)
+            throw std::runtime_error("failed to create semaphore\n");
+        return semaphore;
+    };
+
+    VkRenderPass create_render_pass(VkDevice &dev, std::vector<VkAttachmentDescription> attachments, 
+                                    std::vector<VkSubpassDescription> subpasses, std::vector<VkSubpassDependency> dependencies) 
+    {
+        VkRenderPassCreateInfo create_info{render_pass_create_info(attachments.data(), attachments.size(), 
+                                                                   subpasses.data(), subpasses.size(), 
+                                                                   dependencies.data(), dependencies.size())};
+        VkRenderPass render_pass;
+        if (vkCreateRenderPass(dev, &create_info, nullptr, &render_pass) != VK_SUCCESS)
+            throw std::runtime_error("failed to create render pass\n");
+        return render_pass;
+    }
 }

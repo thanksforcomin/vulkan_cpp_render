@@ -175,4 +175,35 @@ namespace vulkan {
             .maxSets = max_sets
         };
     };
+
+    inline VkFenceCreateInfo fence_create_info(VkFenceCreateFlags flags) {
+        return VkFenceCreateInfo {
+            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = flags
+        };
+    }
+
+    inline VkSemaphoreCreateInfo semaphore_create_info(VkSemaphoreCreateFlags flags) {
+        return VkSemaphoreCreateInfo {
+            .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = flags
+        };
+    }
+
+    inline VkRenderPassCreateInfo render_pass_create_info(VkAttachmentDescription *attachment, uint32_t attachment_count, 
+                                                          VkSubpassDescription *subpass, uint32_t subpass_count, 
+                                                          VkSubpassDependency *dependency, uint32_t dependency_count) {
+        return VkRenderPassCreateInfo {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+            .pNext = nullptr,
+            .attachmentCount = attachment_count,
+            .pAttachments = attachment,
+            .subpassCount = subpass_count,
+            .pSubpasses = subpass,
+            .dependencyCount = dependency_count,
+            .pDependencies = dependency
+        };
+    }
 }

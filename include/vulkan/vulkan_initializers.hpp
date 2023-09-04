@@ -39,4 +39,11 @@ namespace vulkan {
     VkDescriptorSet allocate_descriptor_set(VkDevice &dev, VkDescriptorPool &pool, VkDescriptorSetLayout &layout);
 
     VkDescriptorPool create_descriptor_pool(VkDevice &dev, std::vector<VkDescriptorPoolSize> pool_sizes, uint32_t max_sets);
+
+    VkFence create_fence(VkDevice &dev, VkFenceCreateFlags flags = VK_FENCE_CREATE_SIGNALED_BIT);
+
+    VkSemaphore create_semaphore(VkDevice &dev, VkSemaphoreCreateFlags flags = 0);
+
+    VkRenderPass create_render_pass(VkDevice &dev, std::vector<VkAttachmentDescription> attachments, 
+                                    std::vector<VkSubpassDescription> subpasses, std::vector<VkSubpassDependency> dependencies = {});
 }

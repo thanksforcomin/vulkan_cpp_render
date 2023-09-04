@@ -5,48 +5,20 @@
 
 namespace engine {
     //RenderPass
-    RenderPass::RenderPass(VulkanContext *vulkan_context, const uint32_t clear_val_count, VkClearValue *clear_val) :
+    RenderPass::RenderPass(VulkanContext *vulkan_context) :
         context(vulkan_context),
-        clear_value_count(clear_val_count),
-        clear_value(clear_val),
         initialized(false)
-    { }
+    { 
+        clear_values.push_back({ .color = {0.0f, 0.0f, 1.0f, 1.0f} });
+    }
 
     RenderPass::~RenderPass() {
         if(initialized)
-            vkDestroyRenderPass(context->device.logical, data, nullptr);
+            vkDestroyRenderPass(context->device.logical, render_pass, nullptr);
         std::cout << "destroyed render pass" << "\n";
     }
 
-    void RenderPass::init(const uint32_t attachments_count,
-                          VkAttachmentDescription *attachments,
-                          const uint32_t subpass_count,
-                          VkSubpassDescription *subpasses, 
-                          const uint32_t dependencies_count,
-                          VkSubpassDependency *dependencies) 
-    {
-        VkRenderPassCreateInfo create_info{};
-        create_info.attachmentCount = attachments_count;
-        create_info.pAttachments = attachments;
-        create_info.subpassCount = subpass_count;
-        create_info.pSubpasses = subpasses;
-        create_info.dependencyCount = dependencies_count;
-        create_info.pDependencies = dependencies;
-
-        if(vkCreateRenderPass(context->device.logical, &create_info, nullptr, &data) != VK_SUCCESS)
-            throw std::runtime_error("unable to create render pass");
-
-        begin_info = {};
-        begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        begin_info.pNext = nullptr;
-        begin_info.renderPass = data;
-        begin_info.framebuffer = nullptr; // we will set it later, that's why it's public
-        begin_info.renderArea.offset = {0, 0};
-        begin_info.renderArea.extent = context->swap_chain.swap_chain_extent;
-        begin_info.clearValueCount = clear_value_count;
-        begin_info.pClearValues = clear_value;
-    }
-
+    //TODO: delet
     void RenderPass::init_default() { //dumb on purpose
         VkAttachmentDescription color_attachment{};
         color_attachment.format = context->swap_chain.swap_chain_image_format;
@@ -57,9 +29,7 @@ namespace engine {
         color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-        VkAttachmentReference color_attachment_reference{};
-        color_attachment_reference.attachment = 0;
-        color_attachment_reference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        VkAttachmentReference color_attachment_reference{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -73,18 +43,18 @@ namespace engine {
         create_info.subpassCount = 1;
         create_info.pSubpasses = &subpass;
 
-        if(vkCreateRenderPass(context->device.logical, &create_info, nullptr, &data) != VK_SUCCESS)
+        if(vkCreateRenderPass(context->device.logical, &create_info, nullptr, &render_pass) != VK_SUCCESS)
             throw std::runtime_error("unable to create default render pass");
         std::cout << "created render pass\n";
 
         begin_info = {};
         begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         begin_info.pNext = nullptr;
-        begin_info.renderPass = data;
+        begin_info.renderPass = render_pass;
         begin_info.framebuffer = nullptr; // we will set it later, that's why it's public
         begin_info.renderArea.offset = {0, 0};
         begin_info.renderArea.extent = context->swap_chain.swap_chain_extent;
-        begin_info.clearValueCount = clear_value_count;
-        begin_info.pClearValues = clear_value;
+        begin_info.clearValueCount = clear_values.size();
+        begin_info.pClearValues = clear_values.data();
     }
 }

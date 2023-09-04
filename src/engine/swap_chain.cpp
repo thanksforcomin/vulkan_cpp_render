@@ -44,7 +44,7 @@ namespace engine {
     void SwapChain::create_framebuffers(RenderPass &render_pass) {
         for (VkImageView& image_view : swap_chain_image_views) {
             swap_chain_framebuffers.push_back(
-                vulkan::create_framebuffer(vulkan_context->device.logical, render_pass.data, &image_view, swap_chain_extent)
+                vulkan::create_framebuffer(vulkan_context->device.logical, render_pass.render_pass, &image_view, swap_chain_extent)
             );
         }
     }

@@ -5,25 +5,19 @@ namespace engine {
     class VulkanContext; //forward declaration
 
     class RenderPass {
+        private:
+            VulkanContext *context;
         public:
-            RenderPass(VulkanContext *vulkan_context, const uint32_t clear_val_count, VkClearValue *clear_val);
+            RenderPass(VulkanContext *vulkan_context);
             ~RenderPass();
 
-            void init(const uint32_t attachments_count,
-                      VkAttachmentDescription *attachments,
-                      const uint32_t subpass_count,
-                      VkSubpassDescription *subpasses, 
-                      const uint32_t dependencies_count = 0,
-                      VkSubpassDependency *dependencies = nullptr);
             void init_default(); //one subpass, values taken from vulkan context
  
-            VkRenderPass data;
+            VkRenderPass render_pass;
             VkRenderPassBeginInfo begin_info;
 
         private:
             bool initialized;
-            VulkanContext *context;
-            const uint32_t clear_value_count;
-            VkClearValue *clear_value;
+            std::vector<VkClearValue> clear_values;
     };
 }

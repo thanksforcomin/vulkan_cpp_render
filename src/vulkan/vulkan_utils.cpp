@@ -185,6 +185,17 @@ namespace vulkan {
         };
     };
 
+    VkRenderPassBeginInfo get_render_pass_begin_info(VkRenderPass &render_pass, VkRect2D render_area, VkClearValue *clear_value, uint32_t clear_value_size) {
+        return VkRenderPassBeginInfo {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+            .pNext = nullptr,
+            .renderPass = render_pass,
+            .renderArea = render_area,
+            .clearValueCount = clear_value_size,
+            .pClearValues = clear_value
+        };
+    };
+
     VkDescriptorSetLayoutBinding get_descriptor_set_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage, uint32_t binding_point) {
         return VkDescriptorSetLayoutBinding {
             .binding = binding_point,
@@ -203,7 +214,7 @@ namespace vulkan {
         };
     };
 
-    VkWriteDescriptorSet get_descriptor_write_info(VkDescriptorType type, VkDescriptorSet dst_set, uint32_t binding, VkDescriptorBufferInfo buffer_info) {
+    VkWriteDescriptorSet get_descriptor_write_info(VkDescriptorType type, VkDescriptorSet dst_set, uint32_t binding, VkDescriptorBufferInfo &buffer_info) {
         return {
             .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
             .dstSet = dst_set,
@@ -211,67 +222,6 @@ namespace vulkan {
             .descriptorCount = 1,
             .pBufferInfo = &buffer_info
         };
-    };
-    
-    pipeline_builder& pipeline_builder::vertex_assembly(VkPipelineVertexInputStateCreateInfo info) {
-        create_info.pVertexInputState = new VkPipelineVertexInputStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pVertexInputState; });
-    }
-
-    pipeline_builder& pipeline_builder::input_assembly(VkPipelineInputAssemblyStateCreateInfo info) {
-        create_info.pInputAssemblyState = new VkPipelineInputAssemblyStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pInputAssemblyState; });
-    }
-
-    pipeline_builder& pipeline_builder::tesselation(VkPipelineTessellationStateCreateInfo info) {
-        create_info.pTessellationState = new VkPipelineTessellationStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pTessellationState; });
-    }
-
-    pipeline_builder& pipeline_builder::viewport(VkPipelineViewportStateCreateInfo info) {
-        create_info.pViewportState = new VkPipelineViewportStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pViewportState; });
-    }    
-
-    pipeline_builder& pipeline_builder::rasterization(VkPipelineRasterizationStateCreateInfo info) {
-        create_info.pRasterizationState = new VkPipelineRasterizationStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pRasterizationState; });
-    }
-
-    pipeline_builder& pipeline_builder::multisampling(VkPipelineMultisampleStateCreateInfo info) {
-        create_info.pMultisampleState = new VkPipelineMultisampleStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pMultisampleState; });
-    }
-
-    pipeline_builder& pipeline_builder::depth_stencil(VkPipelineDepthStencilStateCreateInfo info) {
-        create_info.pDepthStencilState = new VkPipelineDepthStencilStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pDepthStencilState; });
-    } 
-
-    pipeline_builder& pipeline_builder::color_blend(VkPipelineColorBlendStateCreateInfo info) {
-        create_info.pColorBlendState = new VkPipelineColorBlendStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pColorBlendState; });
-    }
-
-    pipeline_builder& pipeline_builder::dynamic_state(VkPipelineDynamicStateCreateInfo info) {
-        create_info.pDynamicState = new VkPipelineDynamicStateCreateInfo(info);
-        destructors.push_back([=]{ delete create_info.pDynamicState; });
-    }
-
-    pipeline_builder& pipeline_builder::shader_stages(std::vector<VkPipelineShaderStageCreateInfo> stages) {
-        create_info.stageCount = stages.size();
-        create_info.pStages = stages.data();
-    }
-
-    VkPipeline pipeline_builder::init(VkDevice &dev) {
-        VkPipeline data;
-        if(vkCreateGraphicsPipelines(dev, VK_NULL_HANDLE, 1, &create_info, nullptr, &data) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create graphics pipeline!");
-        }
-
-        for(auto& i : destructors) {
-                i();
-        }
     };
 
     pipeline_builder begin_pipeline_builder(VkRenderPass &render_pass, uint32_t subpass) {
@@ -283,5 +233,31 @@ namespace vulkan {
         builder.create_info.renderPass = render_pass;
         builder.create_info.subpass = subpass;
         return builder;
+    };
+
+    VkAttachmentDescription get_color_attachment(VkFormat &format, VkImageLayout &fin_layout, VkImageLayout init_layout) {
+        return VkAttachmentDescription {
+            .format = format,
+            .samples = VK_SAMPLE_COUNT_1_BIT,
+            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+            .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+            .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            .initialLayout = init_layout,
+            .finalLayout = fin_layout
+        };
+    };
+
+    VkAttachmentDescription get_depth_attachment(VkFormat &format, VkImageLayout &fin_layout, VkImageLayout init_layout) {
+        return VkAttachmentDescription {
+            .format = format,
+            .samples = VK_SAMPLE_COUNT_1_BIT,
+            .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+            .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            .initialLayout = init_layout,
+            .finalLayout = fin_layout
+        };
     };
 }

@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "include/vulkan/structs.hpp"
+#include "include/vulkan/pipeline.hpp"
 
 namespace vulkan {
     std::vector<const char*> require_extensions();
@@ -28,30 +29,17 @@ namespace vulkan {
 
     VkCommandBufferBeginInfo get_command_buffer_begin_info(VkCommandBufferUsageFlags flags = 0);
 
+    VkRenderPassBeginInfo get_render_pass_begin_info(VkRenderPass &render_pass, VkRect2D render_area, VkClearValue *clear_value, uint32_t clear_value_size = 1);
+
     VkDescriptorSetLayoutBinding get_descriptor_set_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage, uint32_t binding_point);
 
     VkDescriptorBufferInfo get_buffer_info(VkBuffer &buffer, VkDeviceSize size, uint32_t offset = 0);
 
     VkWriteDescriptorSet get_descriptor_write_info(VkDescriptorType type, VkDescriptorSet dst_set, uint32_t binding, VkDescriptorBufferInfo &buffer_info);
 
-    struct pipeline_builder {
-        VkGraphicsPipelineCreateInfo create_info;
-
-        std::vector<std::function<void()>> destructors;
-
-        pipeline_builder& vertex_assembly(VkPipelineVertexInputStateCreateInfo info);
-        pipeline_builder& input_assembly(VkPipelineInputAssemblyStateCreateInfo info);
-        pipeline_builder& tesselation(VkPipelineTessellationStateCreateInfo info);
-        pipeline_builder& viewport(VkPipelineViewportStateCreateInfo info);
-        pipeline_builder& rasterization(VkPipelineRasterizationStateCreateInfo info);
-        pipeline_builder& multisampling(VkPipelineMultisampleStateCreateInfo info);
-        pipeline_builder& depth_stencil(VkPipelineDepthStencilStateCreateInfo info);
-        pipeline_builder& color_blend(VkPipelineColorBlendStateCreateInfo info);
-        pipeline_builder& dynamic_state(VkPipelineDynamicStateCreateInfo info);
-        pipeline_builder& shader_stages(std::vector<VkPipelineShaderStageCreateInfo> stages);
-
-        VkPipeline init(VkDevice &dev);
-    };
-
     pipeline_builder begin_pipeline_builder(VkRenderPass &render_pass, uint32_t subpass = 0);
+
+    VkAttachmentDescription get_color_attachment(VkFormat &format, VkImageLayout &fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
+
+    VkAttachmentDescription get_depth_attachment(VkFormat &format, VkImageLayout &fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
 }

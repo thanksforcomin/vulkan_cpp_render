@@ -31,27 +31,4 @@ namespace vulkan {
         VkBuffer buffer;
         VmaAllocation allocation;
     };
-
-    struct pipeline_builder {
-        VkGraphicsPipelineCreateInfo create_info;
-
-        std::vector<std::function<void()>> destructors;
-
-        pipeline_builder& push_input_assembly(VkPipelineInputAssemblyStateCreateInfo info) {
-            create_info.pInputAssemblyState = new VkPipelineInputAssemblyStateCreateInfo(info);
-            destructors.push_back([=]{ delete create_info.pInputAssemblyState; });
-        }
-        pipeline_builder& push_vertex_assembly(VkPipelineVertexInputStateCreateInfo info) {
-            create_info.pVertexInputState = new VkPipelineVertexInputStateCreateInfo(info);
-            destructors.push_back([=]{ delete create_info.pVertexInputState; });
-        }
-
-        void init() {
-            //code here
-
-            for(auto& i : destructors) {
-                i();
-            }
-        }
-    };
 }

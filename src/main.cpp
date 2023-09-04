@@ -35,7 +35,7 @@ int main() {
     VkClearValue clear_val{};
     clear_val.color = {0.0f, 0.0f, 1.0f, 1.0f};
 
-    engine::RenderPass main_render_pass(&context, 1, &clear_val);
+    engine::RenderPass main_render_pass(&context);
     main_render_pass.init_default();
     context.swap_chain.create_framebuffers(main_render_pass);
 
