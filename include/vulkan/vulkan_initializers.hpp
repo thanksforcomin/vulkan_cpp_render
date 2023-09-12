@@ -46,4 +46,6 @@ namespace vulkan {
 
     VkRenderPass create_render_pass(VkDevice &dev, std::vector<VkAttachmentDescription> attachments, 
                                     std::vector<VkSubpassDescription> subpasses, std::vector<VkSubpassDependency> dependencies = {});
+
+    VkPipelineLayout create_pipeline_layout(VkDevice &dev, std::vector<VkDescriptorSetLayout> set_layouts, std::vector<VkPushConstantRange> push_constants = {});
 }

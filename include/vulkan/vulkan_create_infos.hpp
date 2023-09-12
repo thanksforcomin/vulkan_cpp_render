@@ -206,4 +206,17 @@ namespace vulkan {
             .pDependencies = dependency
         };
     }
+
+    inline VkPipelineLayoutCreateInfo pipeline_layout_create_info(VkDescriptorSetLayout *set_layout, uint32_t set_layout_count,
+                                                                  VkPushConstantRange *push_constant_range, uint32_t push_constant_range_count) 
+    {
+        return VkPipelineLayoutCreateInfo {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+            .pNext = nullptr,
+            .setLayoutCount = set_layout_count,
+            .pSetLayouts = set_layout,
+            .pushConstantRangeCount = push_constant_range_count,
+            .pPushConstantRanges = push_constant_range
+        };   
+    }
 }

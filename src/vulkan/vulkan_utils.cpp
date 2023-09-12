@@ -224,18 +224,19 @@ namespace vulkan {
         };
     };
 
-    pipeline_builder begin_pipeline_builder(VkRenderPass &render_pass, uint32_t subpass) {
-        pipeline_builder builder;
+    pipeline::pipeline_builder begin_pipeline_builder(VkRenderPass &render_pass, VkPipelineLayout &layout, uint32_t subpass) {
+        pipeline::pipeline_builder builder;
         builder.create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         builder.create_info.basePipelineHandle = VK_NULL_HANDLE;
         builder.create_info.basePipelineIndex = -1;
         builder.create_info.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
         builder.create_info.renderPass = render_pass;
         builder.create_info.subpass = subpass;
+        builder.create_info.layout = layout;
         return builder;
     };
 
-    VkAttachmentDescription get_color_attachment(VkFormat &format, VkImageLayout &fin_layout, VkImageLayout init_layout) {
+    VkAttachmentDescription get_color_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout) {
         return VkAttachmentDescription {
             .format = format,
             .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -248,7 +249,7 @@ namespace vulkan {
         };
     };
 
-    VkAttachmentDescription get_depth_attachment(VkFormat &format, VkImageLayout &fin_layout, VkImageLayout init_layout) {
+    VkAttachmentDescription get_depth_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout) {
         return VkAttachmentDescription {
             .format = format,
             .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -260,4 +261,15 @@ namespace vulkan {
             .finalLayout = fin_layout
         };
     };
+
+    VkViewport get_viewport(VkExtent2D &extent) {
+        return VkViewport {
+            .x = 0.0f,
+            .y = 0.0f,
+            .width = (float)extent.width,
+            .height = (float)extent.height,
+            .minDepth = 0.0f,
+            .maxDepth = 1.0f
+        };
+    }
 }

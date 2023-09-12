@@ -1,6 +1,6 @@
 #include "include/engine/vulkan_context.hpp"
 #include "include/engine/shader.hpp"
-#include "include/engine/pipeline.hpp"
+#include "include/engine/frame.hpp"
 #include "include/vulkan/vulkan_utils.hpp"
 
 #include <stdexcept>

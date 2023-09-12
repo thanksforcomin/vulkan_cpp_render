@@ -1,5 +1,6 @@
 #include "include/engine/renderpass.hpp"
 #include "include/engine/vulkan_context.hpp"
+#include "include/vulkan/vulkan_utils.hpp"
 
 #include <iostream>
 
@@ -20,41 +21,18 @@ namespace engine {
 
     //TODO: delet
     void RenderPass::init_default() { //dumb on purpose
-        VkAttachmentDescription color_attachment{};
-        color_attachment.format = context->swap_chain.swap_chain_image_format;
-        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        VkAttachmentDescription color_attachment = vulkan::get_color_attachment(context->swap_chain.swap_chain_image_format, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
         VkAttachmentReference color_attachment_reference{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
-        VkSubpassDescription subpass{};
-        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &color_attachment_reference;
+        VkSubpassDescription subpass{
+            .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+            .colorAttachmentCount = 1,
+            .pColorAttachments = &color_attachment_reference
+        };
 
-        VkRenderPassCreateInfo create_info{};
-        create_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        create_info.attachmentCount = 1;
-        create_info.pAttachments = &color_attachment;
-        create_info.subpassCount = 1;
-        create_info.pSubpasses = &subpass;
+        render_pass = vulkan::create_render_pass(context->device.logical, {color_attachment}, {subpass}, {});
 
-        if(vkCreateRenderPass(context->device.logical, &create_info, nullptr, &render_pass) != VK_SUCCESS)
-            throw std::runtime_error("unable to create default render pass");
-        std::cout << "created render pass\n";
-
-        begin_info = {};
-        begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        begin_info.pNext = nullptr;
-        begin_info.renderPass = render_pass;
-        begin_info.framebuffer = nullptr; // we will set it later, that's why it's public
-        begin_info.renderArea.offset = {0, 0};
-        begin_info.renderArea.extent = context->swap_chain.swap_chain_extent;
-        begin_info.clearValueCount = clear_values.size();
-        begin_info.pClearValues = clear_values.data();
+        begin_info = vulkan::get_render_pass_begin_info(render_pass, { {0, 0}, context->swap_chain.swap_chain_extent }, clear_values.data(), clear_values.size());
     }
 }

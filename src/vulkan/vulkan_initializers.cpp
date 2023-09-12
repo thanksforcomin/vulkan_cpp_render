@@ -235,4 +235,12 @@ namespace vulkan {
             throw std::runtime_error("failed to create render pass\n");
         return render_pass;
     }
+
+    VkPipelineLayout create_pipeline_layout(VkDevice &dev, std::vector<VkDescriptorSetLayout> set_layouts, std::vector<VkPushConstantRange> push_constants) {
+        VkPipelineLayoutCreateInfo create_info{pipeline_layout_create_info(set_layouts.data(), set_layouts.size(), push_constants.data(), push_constants.size())};
+        VkPipelineLayout pipeline_layout;
+        if(vkCreatePipelineLayout(dev, &create_info, nullptr, &pipeline_layout) != VK_SUCCESS) 
+            throw std::runtime_error("failed to create pipeline layout\n");
+        return pipeline_layout;
+    }
 }

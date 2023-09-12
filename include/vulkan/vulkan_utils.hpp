@@ -37,9 +37,11 @@ namespace vulkan {
 
     VkWriteDescriptorSet get_descriptor_write_info(VkDescriptorType type, VkDescriptorSet dst_set, uint32_t binding, VkDescriptorBufferInfo &buffer_info);
 
-    pipeline_builder begin_pipeline_builder(VkRenderPass &render_pass, uint32_t subpass = 0);
+    pipeline::pipeline_builder begin_pipeline_builder(VkRenderPass &render_pass, VkPipelineLayout &layout, uint32_t subpass = 0);
 
-    VkAttachmentDescription get_color_attachment(VkFormat &format, VkImageLayout &fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
+    VkAttachmentDescription get_color_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
 
-    VkAttachmentDescription get_depth_attachment(VkFormat &format, VkImageLayout &fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
+    VkAttachmentDescription get_depth_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
+
+    VkViewport get_viewport(VkExtent2D &extent);
 }

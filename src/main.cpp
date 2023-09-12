@@ -9,10 +9,13 @@
 #include "include/engine/defines.hpp"
 #include "include/engine/vulkan_context.hpp"
 #include "include/engine/shader_loader.hpp"
-#include "include/engine/pipeline.hpp"
+#include "include/engine/frame.hpp"
 #include "include/engine/renderpass.hpp"
 #include "include/engine/buffers.hpp"
 #include "include/engine/descriptor.hpp"
+
+#include "include/vulkan/pipeline.hpp"
+#include "include/vulkan/vertex.hpp"
 
 #include <iostream>
 #include <memory>
