@@ -60,9 +60,7 @@ namespace fwd_plus {
                 .depthWriteEnable = VK_TRUE,
                 .depthCompareOp = VK_COMPARE_OP_LESS,
                 .depthBoundsTestEnable = VK_FALSE,
-                .stencilTestEnable = VK_FALSE,
-                .minDepthBounds = 0.0f,
-                .maxDepthBounds = 1.0f
+                .stencilTestEnable = VK_FALSE
             }
         )
         .shader_stages({vertex_shader})

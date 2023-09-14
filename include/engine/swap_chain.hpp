@@ -5,8 +5,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "include/engine/details.hpp"
-#include "include/engine/window.hpp"
 #include "include/engine/framebuffer.hpp"
 
 namespace engine {

@@ -272,4 +272,59 @@ namespace vulkan {
             .maxDepth = 1.0f
         };
     }
+
+    void submit_frame(std::vector<VkCommandBuffer>&& command_buffers,
+                      std::vector<VkSemaphore>&& wait_semaphores,
+                      std::vector<VkSemaphore>&& sig_semaphores,
+                      const VkFence& fence,
+                      const VkQueue& queue,
+                      VkPipelineStageFlags stage_flag
+                      )
+    {
+        VkSubmitInfo submit_info {
+            .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .pNext = nullptr,
+            .commandBufferCount = (uint32_t)command_buffers.size(),
+            .pCommandBuffers = command_buffers.data(),
+            .waitSemaphoreCount = (uint32_t)wait_semaphores.size(),
+            .pWaitSemaphores = wait_semaphores.data(),
+            .signalSemaphoreCount = (uint32_t)sig_semaphores.size(),
+            .pSignalSemaphores = sig_semaphores.data(),
+            .pWaitDstStageMask = &stage_flag
+        };
+        if(vkQueueSubmit(queue, 1, &submit_info, fence) != VK_SUCCESS)
+            throw std::runtime_error("failed to submit draw command buffer!\n");
+    }
+
+    void present_frame(const VkSwapchainKHR &swap_chain, std::vector<VkSemaphore>&& wait_semops, uint32_t *index, const VkQueue& queue) {
+        VkPresentInfoKHR present_info{
+            .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+            .pNext = nullptr,
+            .waitSemaphoreCount = (uint32_t)wait_semops.size(),
+            .pWaitSemaphores = wait_semops.data(),
+            .swapchainCount = 1,
+            .pSwapchains = &swap_chain,
+            .pImageIndices = index
+        };
+        if(vkQueuePresentKHR(queue, &present_info) != VK_SUCCESS)
+            throw std::runtime_error("failed to present frame");
+    }
+
+    allocated_buffer allocate_buffer(VmaAllocator &allocator, size_t size, VkBufferUsageFlags flags, VmaMemoryUsage usage) {
+        allocated_buffer buffer {
+            .size = size
+        };
+
+        VkBufferCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        create_info.pNext = nullptr;
+        create_info.size = size;
+        create_info.usage = flags;
+
+        VmaAllocationCreateInfo allocation_info{};
+        allocation_info.usage = usage;
+
+        vmaCreateBuffer(allocator, &create_info, &allocation_info, &buffer.buffer, &buffer.allocation, nullptr);
+        return buffer;
+    };
 }

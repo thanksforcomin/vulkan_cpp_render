@@ -1,6 +1,8 @@
 #pragma once
 
 #include <functional>
+#include <glm/glm.hpp>
+#include <glm/gtx/hash.hpp>
 
 namespace utils {
     template <class T>

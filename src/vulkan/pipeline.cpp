@@ -131,11 +131,7 @@ namespace vulkan {
                 .depthWriteEnable = VK_FALSE,
                 .depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL,
                 .depthBoundsTestEnable = VK_FALSE,
-                .stencilTestEnable = VK_FALSE,
-                .front = VkStencilOpState{},
-                .back = VkStencilOpState{},
-                .minDepthBounds = 0.0f,
-                .maxDepthBounds = 1.0f
+                .stencilTestEnable = VK_FALSE
             };
         }
 

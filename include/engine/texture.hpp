@@ -1,14 +1,12 @@
 #pragma once
 
-#include "include/engine/details.hpp"
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#include "vk_mem_alloc.h"
 #include <memory>
 
 namespace engine {
     class VulkanContext; //forward decl
-
-    allocated_buffer upload_image(std::string filepath) {
-        
-    };
 
     class Texture {
         private:

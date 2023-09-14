@@ -1,7 +1,7 @@
 #pragma once
 
-#include "include/engine/details.hpp"
-#include "include/engine/buffers.hpp"
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
 #include "include/vulkan/vulkan_utils.hpp"
 #include "include/vulkan/vulkan_initializers.hpp"
 
@@ -47,7 +47,7 @@ namespace engine {
             void allocate(DescriptorPool &pool);
             
             template<typename T>
-            void push_buffer_binding(UniformBuffer<T>& buffer, VkDescriptorType type, uint32_t binding) {
+            void push_buffer_binding(vulkan::allocated_buffer& buffer, VkDescriptorType type, uint32_t binding) {
                 descriptor_buffers.push_back(vulkan::get_buffer_info(buffer.buffer, buffer.size));
 
                 write_descriptor_sets.push_back(vulkan::get_descriptor_write_info(type, descriptor_set, binding, descriptor_buffers.back()));

@@ -44,4 +44,18 @@ namespace vulkan {
     VkAttachmentDescription get_depth_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
 
     VkViewport get_viewport(VkExtent2D &extent);
+    
+    void submit_frame(std::vector<VkCommandBuffer>&& command_buffers,
+                      std::vector<VkSemaphore>&& wait_semaphores,
+                      std::vector<VkSemaphore>&& sig_semaphores,
+                      const VkFence& fence,
+                      const VkQueue& queue,
+                      VkPipelineStageFlags stage_flag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+                      );
+
+    void present_frame(const VkSwapchainKHR &swap_chain, std::vector<VkSemaphore>&& wait_semops, uint32_t *index, const VkQueue& queue);
+
+    VkPresentInfoKHR get_present_info(VkSwapchainKHR &swap_chain, uint32_t index);
+
+    allocated_buffer allocate_buffer(VmaAllocator &allocator, VkDeviceSize size, VkBufferUsageFlags flags, VkBufferUsageFlags usage);
 }

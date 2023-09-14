@@ -11,7 +11,6 @@
 #include "include/engine/shader_loader.hpp"
 #include "include/engine/frame.hpp"
 #include "include/engine/renderpass.hpp"
-#include "include/engine/buffers.hpp"
 #include "include/engine/descriptor.hpp"
 
 #include "include/vulkan/pipeline.hpp"
@@ -48,8 +47,6 @@ int main() {
     pool.push(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3);
     pool.init();
 
-    engine::UniformBuffer<engine::uniform::camera_data> camera_UBO(&context);
-
     engine::DescriptorSet camera_descriptor(&context);
 
     //main loop
@@ -63,11 +60,6 @@ int main() {
         frame->command_buffer.reset();
 
         main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index);
-
-        /*vkBeginCommandBuffer(frame->command_buffer, &frame->command_buffer_begin_info);
-        vkCmdBeginRenderPass(frame.command_buffer, &main_render_pass.begin_info, VK_SUBPASS_CONTENTS_INLINE);
-        vkCmdEndRenderPass(frame.command_buffer);
-        vkEndCommandBuffer(frame.command_buffer);*/
 
         frame->command_buffer.begin(main_render_pass.begin_info);
         frame->command_buffer.end();

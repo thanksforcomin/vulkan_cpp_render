@@ -93,43 +93,12 @@ namespace engine
 
     void VulkanContext::submit(const Frame *fr)
     {
-        VkSubmitInfo submit{};
-        submit.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submit.pNext = nullptr;
-        
-        VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
-	    submit.pWaitDstStageMask = &waitStage;
-
-        submit.waitSemaphoreCount = 1;
-        submit.pWaitSemaphores = &fr->present_semaphore;
-
-        submit.signalSemaphoreCount = 1;
-        submit.pSignalSemaphores = &fr->graphics_semaphore;
-
-        submit.commandBufferCount = 1;
-        submit.pCommandBuffers = &fr->command_buffer.command_buffer;
-
-        if (vkQueueSubmit(graphics_queue, 1, &submit, fr->fence) != VK_SUCCESS)
-            throw std::runtime_error("cannot submit a frame");
+        vulkan::submit_frame({fr->command_buffer.command_buffer}, {fr->present_semaphore}, {fr->graphics_semaphore}, fr->fence, graphics_queue, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
     }
 
     void VulkanContext::present(const Frame *fr, uint32_t *index)
     {
-        VkPresentInfoKHR present_info{};
-        present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-        present_info.pNext = nullptr;
-
-        present_info.swapchainCount = 1;
-        present_info.pSwapchains = &swap_chain.swap_chain;
-
-        present_info.waitSemaphoreCount = 1;
-        present_info.pWaitSemaphores = &fr->graphics_semaphore;
-
-        present_info.pImageIndices = index;
-
-        if (vkQueuePresentKHR(graphics_queue, &present_info) != VK_SUCCESS)
-            throw std::runtime_error("failed to present frame");
+        vulkan::present_frame(swap_chain.swap_chain, {fr->graphics_semaphore}, index, graphics_queue);
     }
 
     // STATIC VARIABLES

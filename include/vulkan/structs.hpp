@@ -30,5 +30,6 @@ namespace vulkan {
     struct allocated_buffer {
         VkBuffer buffer;
         VmaAllocation allocation;
+        size_t size;
     };
 }
