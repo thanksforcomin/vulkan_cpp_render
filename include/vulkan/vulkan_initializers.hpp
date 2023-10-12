@@ -48,4 +48,6 @@ namespace vulkan {
                                     std::vector<VkSubpassDescription> subpasses, std::vector<VkSubpassDependency> dependencies = {});
 
     VkPipelineLayout create_pipeline_layout(VkDevice &dev, std::vector<VkDescriptorSetLayout> set_layouts, std::vector<VkPushConstantRange> push_constants = {});
+
+    VkShaderModule create_chader_module(VkDevice &dev, std::string&& data);
 }

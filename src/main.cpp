@@ -34,9 +34,6 @@ int main() {
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
 
-    VkClearValue clear_val{};
-    clear_val.color = {0.0f, 0.0f, 1.0f, 1.0f};
-
     engine::RenderPass main_render_pass(&context);
     main_render_pass.init_default();
     context.swap_chain.create_framebuffers(main_render_pass);

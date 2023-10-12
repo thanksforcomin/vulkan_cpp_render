@@ -47,5 +47,6 @@ namespace vulkan {
         VkPipelineColorBlendAttachmentState color_blend_attachment();
         VkPipelineColorBlendStateCreateInfo color_blend_state(VkPipelineColorBlendAttachmentState *attachment);
         VkPipelineDynamicStateCreateInfo dynamic_state(VkDynamicState *states, uint32_t state_count);
+        VkPipelineShaderStageCreateInfo shader_state(VkShaderStageFlagBits flag, const VkShaderModule &mod);
     }
 }

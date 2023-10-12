@@ -39,6 +39,11 @@ namespace engine {
         descriptor_set = vulkan::allocate_descriptor_set(context->device.logical, pool.pool, layout);
     }
 
+    void DescriptorSet::push_buffer_binding(vulkan::allocated_buffer& buffer, VkDescriptorType type, uint32_t binding) {
+        descriptor_buffers.push_back(vulkan::get_buffer_info(buffer.buffer, buffer.size));
+        write_descriptor_sets.push_back(vulkan::get_descriptor_write_info(type, descriptor_set, binding, descriptor_buffers.back()));
+    }
+
     void DescriptorSet::update_buffers() {
         vkUpdateDescriptorSets(context->device.logical, (uint32_t)write_descriptor_sets.size(), &write_descriptor_sets[0], 0, nullptr);
     }

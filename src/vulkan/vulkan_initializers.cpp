@@ -243,4 +243,12 @@ namespace vulkan {
             throw std::runtime_error("failed to create pipeline layout\n");
         return pipeline_layout;
     }
+
+    VkShaderModule create_chader_module(VkDevice &dev, std::string&& data) {
+        VkShaderModuleCreateInfo create_info{shader_module_create_info(data.size(), &data[0])};
+        VkShaderModule shader_module;
+        if (vkCreateShaderModule(dev, &create_info, nullptr, &shader_module) != VK_SUCCESS)
+            throw std::runtime_error("failed to create shader module\n");
+        return shader_module;
+    }
 }

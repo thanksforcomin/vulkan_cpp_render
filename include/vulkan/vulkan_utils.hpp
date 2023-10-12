@@ -5,6 +5,7 @@
 
 #include "include/vulkan/structs.hpp"
 #include "include/vulkan/pipeline.hpp"
+#include "include/vulkan/vertex.hpp"
 
 namespace vulkan {
     std::vector<const char*> require_extensions();
@@ -57,5 +58,7 @@ namespace vulkan {
 
     VkPresentInfoKHR get_present_info(VkSwapchainKHR &swap_chain, uint32_t index);
 
-    allocated_buffer allocate_buffer(VmaAllocator &allocator, VkDeviceSize size, VkBufferUsageFlags flags, VkBufferUsageFlags usage);
+    allocated_buffer allocate_buffer(VmaAllocator &allocator, VkDeviceSize size, VkBufferUsageFlags flags, VmaMemoryUsage usage);
+
+    void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size);
 }

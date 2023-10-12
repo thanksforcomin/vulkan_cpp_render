@@ -45,13 +45,7 @@ namespace engine {
             void push_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage = VK_SHADER_STAGE_VERTEX_BIT, uint32_t binding_point = 0);
             void create_layout();
             void allocate(DescriptorPool &pool);
-            
-            template<typename T>
-            void push_buffer_binding(vulkan::allocated_buffer& buffer, VkDescriptorType type, uint32_t binding) {
-                descriptor_buffers.push_back(vulkan::get_buffer_info(buffer.buffer, buffer.size));
-
-                write_descriptor_sets.push_back(vulkan::get_descriptor_write_info(type, descriptor_set, binding, descriptor_buffers.back()));
-            }
+            void push_buffer_binding(vulkan::allocated_buffer& buffer, VkDescriptorType type, uint32_t binding);
             //void push_texture_binding(); //TODO
             void update_buffers();
     };

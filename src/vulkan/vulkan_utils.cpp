@@ -312,7 +312,8 @@ namespace vulkan {
 
     allocated_buffer allocate_buffer(VmaAllocator &allocator, size_t size, VkBufferUsageFlags flags, VmaMemoryUsage usage) {
         allocated_buffer buffer {
-            .size = size
+            .size = size,
+            .allocator = &allocator
         };
 
         VkBufferCreateInfo create_info{};
@@ -327,4 +328,11 @@ namespace vulkan {
         vmaCreateBuffer(allocator, &create_info, &allocation_info, &buffer.buffer, &buffer.allocation, nullptr);
         return buffer;
     };
+
+    void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size) {
+        void* ptr;
+        vmaMapMemory(*buffer.allocator, buffer.allocation, &ptr);
+        memcpy(ptr, data, size);
+        vmaUnmapMemory(*buffer.allocator, buffer.allocation);
+    }
 }

@@ -219,4 +219,13 @@ namespace vulkan {
             .pPushConstantRanges = push_constant_range
         };   
     }
+
+    inline VkShaderModuleCreateInfo shader_module_create_info(uint32_t size, const char* data) {
+        return VkShaderModuleCreateInfo {
+            .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+            .pNext = nullptr,
+            .codeSize = size,
+            .pCode = reinterpret_cast<const uint32_t*>(data)
+        };
+    }
 }

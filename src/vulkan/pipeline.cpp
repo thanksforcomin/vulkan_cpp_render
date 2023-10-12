@@ -168,5 +168,14 @@ namespace vulkan {
                 .pDynamicStates = states
             };
         }
+
+        VkPipelineShaderStageCreateInfo shader_state(VkShaderStageFlagBits flag, const VkShaderModule &mod) {
+            VkPipelineShaderStageCreateInfo create_info{};
+            create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            create_info.stage = flag;
+            create_info.module = mod;
+            create_info.pName = "main"; //because why tf would you want to have a starting point not at main?
+            return create_info;
+        }
     }
 }

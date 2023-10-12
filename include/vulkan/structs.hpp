@@ -31,5 +31,6 @@ namespace vulkan {
         VkBuffer buffer;
         VmaAllocation allocation;
         size_t size;
+        VmaAllocator *allocator;
     };
 }
