@@ -46,6 +46,9 @@ int main() {
 
     engine::DescriptorSet camera_descriptor(&context);
 
+    VkPipelineLayout layout(vulkan::create_pipeline_layout(context.device.logical, {camera_descriptor.layout}));
+    
+
     //main loop
     while(!glfwWindowShouldClose(context.game_window)) {
         std::unique_ptr<engine::Frame> &frame = frames[(curr_frame++)%2];

@@ -25,6 +25,8 @@ namespace vulkan {
     
     VkSwapchainKHR create_swap_chain(vulkan_device &vulkan_dev, VkSurfaceKHR &surface, queue_family_indicies indicies, swap_chain_support_details support_details, 
                                      GLFWwindow *window, VkSurfaceFormatKHR format, VkExtent2D extent, VkPresentModeKHR present_mode);
+                                    
+    VkImage create_image(VmaAllocator &allocator, allocated_buffer &buffer, VkDevice &dev, VkFormat format, VkExtent2D extent);
 
     VkImageView create_image_view(VkDevice &dev, VkImage &image, VkFormat &format);
 
@@ -48,6 +50,8 @@ namespace vulkan {
                                     std::vector<VkSubpassDescription> subpasses, std::vector<VkSubpassDependency> dependencies = {});
 
     VkPipelineLayout create_pipeline_layout(VkDevice &dev, std::vector<VkDescriptorSetLayout> set_layouts, std::vector<VkPushConstantRange> push_constants = {});
+
+    VkPipeline create_compute_pipeline(VkDevice &dev, VkPipelineLayout &pipeline_layout, VkPipelineShaderStageCreateInfo &compute_shader);
 
     VkShaderModule create_chader_module(VkDevice &dev, std::string&& data);
 }

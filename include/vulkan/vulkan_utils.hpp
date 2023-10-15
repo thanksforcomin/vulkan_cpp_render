@@ -61,4 +61,6 @@ namespace vulkan {
     allocated_buffer allocate_buffer(VmaAllocator &allocator, VkDeviceSize size, VkBufferUsageFlags flags, VmaMemoryUsage usage);
 
     void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size);
+
+    
 }

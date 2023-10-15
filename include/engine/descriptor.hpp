@@ -23,30 +23,35 @@ namespace engine {
             VkDescriptorPool pool;
 
             void push(VkDescriptorType pool_type, uint32_t pool_size);
+            void init(std::vector<VkDescriptorPoolSize> pool_sizes);
             void init();
     };
 
+    class DescriptorSetLayout {
+        VulkanContext *context;
+
+    public:
+        DescriptorSetLayout(VulkanContext *vulkan_context);
+        ~DescriptorSetLayout();
+
+        void push_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage = VK_SHADER_STAGE_VERTEX_BIT, uint32_t binding_point = 0);
+        void create_layout();
+
+        VkDescriptorSetLayout layout;
+
+    private:
+        std::vector<VkDescriptorSetLayoutBinding> bindings;
+    };
+
     class DescriptorSet {
-        private:
-            VulkanContext *context;   
+    private:
+        VulkanContext *context;   
+        VkDescriptorSetLayout *layout;
 
-            std::vector<VkDescriptorSetLayoutBinding> bindings;
-            
-            std::vector<VkDescriptorBufferInfo> descriptor_buffers;
-            std::vector<VkWriteDescriptorSet> write_descriptor_sets;
+    public:
+        DescriptorSet(VulkanContext *vulkan_context, VkDescriptorSetLayout *desc_layout, VkDescriptorPool *desc_pool);
+        ~DescriptorSet();
 
-        public:
-            DescriptorSet(VulkanContext *vulkan_context);
-            ~DescriptorSet();
-
-            VkDescriptorSetLayout layout;
-            VkDescriptorSet descriptor_set;
-
-            void push_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage = VK_SHADER_STAGE_VERTEX_BIT, uint32_t binding_point = 0);
-            void create_layout();
-            void allocate(DescriptorPool &pool);
-            void push_buffer_binding(vulkan::allocated_buffer& buffer, VkDescriptorType type, uint32_t binding);
-            //void push_texture_binding(); //TODO
-            void update_buffers();
+        VkDescriptorSet descriptor_set;
     };
 }

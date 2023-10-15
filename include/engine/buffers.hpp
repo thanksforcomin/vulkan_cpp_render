@@ -43,7 +43,16 @@ namespace engine {
         { }
         ~UniformBuffer();
 
-    private:
         vulkan::allocated_buffer buffer;
+    };
+
+    class Image {
+    private:
+        VulkanContext *context;
+
+    public:
+        Image() = delete;
+        Image(VulkanContext *vulkan_context, std::string filepath);
+        ~Image();
     };
 }

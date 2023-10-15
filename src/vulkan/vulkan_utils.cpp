@@ -327,7 +327,7 @@ namespace vulkan {
 
         vmaCreateBuffer(allocator, &create_info, &allocation_info, &buffer.buffer, &buffer.allocation, nullptr);
         return buffer;
-    };
+    }
 
     void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size) {
         void* ptr;

@@ -1,3 +1,6 @@
+//
+//A big builder for graphical pipeline
+//
 #pragma once
 
 #include <vulkan/vulkan.hpp>

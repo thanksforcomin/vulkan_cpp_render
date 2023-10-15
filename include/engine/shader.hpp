@@ -22,10 +22,5 @@ namespace engine {
             std::string path;
             VkShaderModule shader_module;
             VkPipelineShaderStageCreateInfo stage_create_info;
-
-        private:
-            std::string read_shader_file(std::string filepath);
-            VkShaderModule create_shader_module(const std::string &code);
-            inline VkPipelineShaderStageCreateInfo shader_stage_creation_info(VkShaderStageFlagBits flag, VkShaderModule &mod);
     };
 }

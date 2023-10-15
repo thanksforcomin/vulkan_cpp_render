@@ -244,6 +244,14 @@ namespace vulkan {
         return pipeline_layout;
     }
 
+    VkPipeline create_compute_pipeline(VkDevice &dev, VkPipelineLayout &pipeline_layout, VkPipelineShaderStageCreateInfo &compute_shader) {
+        VkComputePipelineCreateInfo create_info{compute_pipeline_create_info(pipeline_layout, compute_shader)};
+        VkPipeline pipeline;
+        if (vkCreateComputePipelines(dev, VK_NULL_HANDLE, 1, &create_info, nullptr, &pipeline) != VK_SUCCESS)
+            throw std::runtime_error("failed to create compute pipeline\n");
+        return pipeline;
+    }
+
     VkShaderModule create_chader_module(VkDevice &dev, std::string&& data) {
         VkShaderModuleCreateInfo create_info{shader_module_create_info(data.size(), &data[0])};
         VkShaderModule shader_module;

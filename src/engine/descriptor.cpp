@@ -13,38 +13,39 @@ namespace engine {
         pool_sizes.push_back(VkDescriptorPoolSize {pool_type, pool_size} );
     }
 
+    void DescriptorPool::init(std::vector<VkDescriptorPoolSize> pool_sizes) {
+        pool = vulkan::create_descriptor_pool(context->device.logical, pool_sizes, 100);
+    }
+
     void DescriptorPool::init() {
         pool = vulkan::create_descriptor_pool(context->device.logical, pool_sizes, 100); 
     }
 }
 
 namespace engine {
-    DescriptorSet::DescriptorSet(VulkanContext *vulkan_context) : context(vulkan_context) {
+    DescriptorSetLayout::DescriptorSetLayout(VulkanContext *vulkan_context) : context(vulkan_context) { }
 
-    }
-
-    DescriptorSet::~DescriptorSet() {
+    DescriptorSetLayout::~DescriptorSetLayout() {
         vkDestroyDescriptorSetLayout(context->device.logical, layout, nullptr);
     }
 
-    void DescriptorSet::push_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage, uint32_t binding_point) {
+    void DescriptorSetLayout::push_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage, uint32_t binding_point) {
         bindings.push_back(vulkan::get_descriptor_set_layout_binding(type, shader_stage, binding_point));
     }
 
-    void DescriptorSet::create_layout() {
+    void DescriptorSetLayout::create_layout() {
         layout = vulkan::create_descriptor_set_layout(context->device.logical, bindings);
     }
+}
 
-    void DescriptorSet::allocate(DescriptorPool &pool) {
-        descriptor_set = vulkan::allocate_descriptor_set(context->device.logical, pool.pool, layout);
+namespace engine {
+    DescriptorSet::DescriptorSet(VulkanContext *vulkan_context, VkDescriptorSetLayout *desc_layout, VkDescriptorPool *desc_pool) : 
+        context(vulkan_context),
+        layout(desc_layout),
+        descriptor_set(vulkan::allocate_descriptor_set(context->device.logical, *desc_pool, *layout))
+    {
+
     }
 
-    void DescriptorSet::push_buffer_binding(vulkan::allocated_buffer& buffer, VkDescriptorType type, uint32_t binding) {
-        descriptor_buffers.push_back(vulkan::get_buffer_info(buffer.buffer, buffer.size));
-        write_descriptor_sets.push_back(vulkan::get_descriptor_write_info(type, descriptor_set, binding, descriptor_buffers.back()));
-    }
-
-    void DescriptorSet::update_buffers() {
-        vkUpdateDescriptorSets(context->device.logical, (uint32_t)write_descriptor_sets.size(), &write_descriptor_sets[0], 0, nullptr);
-    }
+    DescriptorSet::~DescriptorSet() { }
 }

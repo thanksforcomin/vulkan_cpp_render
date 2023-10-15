@@ -2,3 +2,5 @@ build*
 .vscode*
 .idea*
 /res/*.spv
+
+!include/vulkan/builder.hpp
