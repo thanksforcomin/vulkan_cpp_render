@@ -3,6 +3,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <vector>
+
 namespace engine {
     class VulkanContext; //forward decl
     class RenderPass;
@@ -18,10 +20,16 @@ namespace engine {
             CommandBuffer(CommandBuffer &&buff);
             ~CommandBuffer();
 
-            void begin(VkRenderPassBeginInfo &render_pass_begin_info);
+            void begin();
+            void begin_renderpass(VkRenderPassBeginInfo &render_pass_begin_info);
+            void end_renderpass();
             void end();
             void reset();
-
+            void submit(std::vector<VkSemaphore> wait_semop,
+                        std::vector<VkSemaphore> signal_semop,
+                        VkFence fence,
+                        uint32_t wait_stages = 0);
+            
             VkCommandBuffer command_buffer;
 
         private:

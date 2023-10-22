@@ -34,7 +34,7 @@ namespace engine {
         DescriptorSetLayout(VulkanContext *vulkan_context);
         ~DescriptorSetLayout();
 
-        void push_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage = VK_SHADER_STAGE_VERTEX_BIT, uint32_t binding_point = 0);
+        void push_layout_binding(VkDescriptorType type, VkShaderStageFlags shader_stage = VK_SHADER_STAGE_VERTEX_BIT, uint32_t binding_point = 0);
         void create_layout();
 
         VkDescriptorSetLayout layout;

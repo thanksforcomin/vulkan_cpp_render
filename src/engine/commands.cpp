@@ -3,6 +3,7 @@
 #include "include/engine/renderpass.hpp"
 
 #include "include/vulkan/vulkan_utils.hpp"
+#include <iostream>
 
 namespace engine {
     CommandBuffer::CommandBuffer(VulkanContext *vulkan_context, VkCommandPool command_pool, VkCommandBufferLevel lvl) :
@@ -31,19 +32,43 @@ namespace engine {
             throw std::runtime_error("cannot reset main command buffer");
     }
 
-    void CommandBuffer::begin(VkRenderPassBeginInfo &render_pass_begin_info) {
+    void CommandBuffer::begin() {
         vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info);
+    }
+
+    void CommandBuffer::begin_renderpass(VkRenderPassBeginInfo &render_pass_begin_info) {
         vkCmdBeginRenderPass(command_buffer, &render_pass_begin_info, 
                             (command_buffer_level == VK_COMMAND_BUFFER_LEVEL_PRIMARY
                             ? VK_SUBPASS_CONTENTS_INLINE : VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS)
         );
     }
 
-    void CommandBuffer::end() {
+    void CommandBuffer::end_renderpass() {
         vkCmdEndRenderPass(command_buffer);
+    }
+
+    void CommandBuffer::end() {
         vkEndCommandBuffer(command_buffer);
     }
 
+    void CommandBuffer::submit(std::vector<VkSemaphore> wait_semop,
+                        std::vector<VkSemaphore> signal_semop,
+                        VkFence fence,
+                        uint32_t wait_stages) 
+    {
+        VkSubmitInfo submit_info(
+            vulkan::get_submit_info(
+                command_buffer,
+                wait_semop,
+                signal_semop,
+                wait_stages
+            )
+        );
+        vulkan::submit_command_buffer(context->graphics_queue, &submit_info, fence);
+    }
+}
+
+namespace engine {
     CommandPool::CommandPool(VulkanContext *vulkan_context, VkCommandPoolCreateFlags flags) :
         context(vulkan_context),
         command_pool(vulkan::create_command_pool(context->device.logical, flags, context->queue_family.graphics_family.value()))

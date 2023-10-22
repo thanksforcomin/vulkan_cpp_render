@@ -93,7 +93,13 @@ namespace engine
 
     void VulkanContext::submit(const Frame *fr)
     {
-        vulkan::submit_frame({fr->command_buffer.command_buffer}, {fr->present_semaphore}, {fr->graphics_semaphore}, fr->fence, graphics_queue, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+        vulkan::submit_frame(
+            {fr->command_buffer.command_buffer}, 
+            {fr->present_semaphore}, 
+            {fr->graphics_semaphore}, 
+            fr->fence, 
+            graphics_queue, 
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
     }
 
     void VulkanContext::present(const Frame *fr, uint32_t *index)

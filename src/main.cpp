@@ -44,11 +44,17 @@ int main() {
     pool.push(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3);
     pool.init();
 
-    engine::DescriptorSet camera_descriptor(&context);
+    engine::DescriptorSetLayout global_set(&context);
+    global_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
+    global_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+    global_set.create_layout();
 
-    VkPipelineLayout layout(vulkan::create_pipeline_layout(context.device.logical, {camera_descriptor.layout}));
+    engine::DescriptorSetLayout object_set(&context);
+    object_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
+    object_set.create_layout();
+
+    VkPipelineLayout layout(vulkan::create_pipeline_layout(context.device.logical, {global_set.layout, object_set.layout}));  
     
-
     //main loop
     while(!glfwWindowShouldClose(context.game_window)) {
         std::unique_ptr<engine::Frame> &frame = frames[(curr_frame++)%2];
@@ -61,10 +67,13 @@ int main() {
 
         main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index);
 
-        frame->command_buffer.begin(main_render_pass.begin_info);
+        frame->command_buffer.begin();
+        frame->command_buffer.begin_renderpass(main_render_pass.begin_info);
+        frame->command_buffer.end_renderpass();
         frame->command_buffer.end();
 
-        context.submit(frame.get());
+        frame->command_buffer.submit({frame->present_semaphore}, {frame->graphics_semaphore}, frame->fence, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+        
         context.present(frame.get(), &swap_chain_image_index);
 
         glfwPollEvents();

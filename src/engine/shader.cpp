@@ -1,6 +1,5 @@
 #include "include/engine/shader.hpp"
 #include "include/engine/vulkan_context.hpp"
-#include "include/utils/utils.hpp"
 #include "include/vulkan/pipeline.hpp"
 
 #include <fstream>
@@ -12,7 +11,7 @@ namespace engine {
         vulkan_context(context),
         path(filepath), 
         type(shader_type),
-        shader_module{vulkan::create_chader_module(context->device.logical, utils::read_from_file(filepath))},
+        shader_module(vulkan::create_chader_module(context->device.logical, utils::read_from_file(filepath))),
         stage_create_info{vulkan::pipeline::shader_state(type, shader_module)}
     { }
 

@@ -29,7 +29,7 @@ namespace engine {
         vkDestroyDescriptorSetLayout(context->device.logical, layout, nullptr);
     }
 
-    void DescriptorSetLayout::push_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage, uint32_t binding_point) {
+    void DescriptorSetLayout::push_layout_binding(VkDescriptorType type, VkShaderStageFlags shader_stage, uint32_t binding_point) {
         bindings.push_back(vulkan::get_descriptor_set_layout_binding(type, shader_stage, binding_point));
     }
 

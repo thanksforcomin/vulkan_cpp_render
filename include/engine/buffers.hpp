@@ -1,7 +1,6 @@
 #pragma once
 
 #include "include/vulkan/vulkan_utils.hpp"
-#include "include/vulkan/vertex.hpp"
 #include "include/engine/vulkan_context.hpp"
 
 namespace engine {

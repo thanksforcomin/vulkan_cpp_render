@@ -9,14 +9,7 @@
 #include <glm/gtx/hash.hpp>
 
 namespace utils {
-    template <class T>
-    inline void hash_combine(std::size_t& seed, const T& v)
-    {
-        std::hash<T> hasher;
-        seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
-    };
-
-    std::string read_from_file(std::string filepath) {
+    inline std::string read_from_file(std::string filepath) {
         std::ifstream file(filepath, std::ios::ate | std::ios::binary);
         if(!file.is_open())
             throw std::runtime_error("failed to open file " + filepath);
@@ -30,5 +23,12 @@ namespace utils {
 
         file.close();
         return result;
-    }  
+    };
+
+    template <class T>
+    inline void hash_combine(std::size_t& seed, const T& v)
+    {
+        std::hash<T> hasher;
+        seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+    };
 }

@@ -196,7 +196,7 @@ namespace vulkan {
         };
     };
 
-    VkDescriptorSetLayoutBinding get_descriptor_set_layout_binding(VkDescriptorType type, VkShaderStageFlagBits shader_stage, uint32_t binding_point) {
+    VkDescriptorSetLayoutBinding get_descriptor_set_layout_binding(VkDescriptorType type, VkShaderStageFlags shader_stage, uint32_t binding_point) {
         return VkDescriptorSetLayoutBinding {
             .binding = binding_point,
             .descriptorCount = 1,
@@ -271,6 +271,29 @@ namespace vulkan {
             .minDepth = 0.0f,
             .maxDepth = 1.0f
         };
+    }
+
+    VkSubmitInfo get_submit_info(VkCommandBuffer &command_buffer,
+                                 std::vector<VkSemaphore>& wait_semaphores,
+                                 std::vector<VkSemaphore>& sig_semaphores,
+                                 uint32_t& wait_stages) 
+    {
+        return VkSubmitInfo {
+            .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .pNext = nullptr,
+            .commandBufferCount = 1,
+            .pCommandBuffers = &command_buffer,
+            .waitSemaphoreCount = (uint32_t)wait_semaphores.size(),
+            .pWaitSemaphores = wait_semaphores.data(),
+            .signalSemaphoreCount = (uint32_t)sig_semaphores.size(),
+            .pSignalSemaphores = sig_semaphores.data(),
+            .pWaitDstStageMask = &wait_stages
+        };
+    }
+
+    void submit_command_buffer(const VkQueue& queue, VkSubmitInfo* submit_info, VkFence& fence) {
+        if(vkQueueSubmit(queue, 1, submit_info, fence) != VK_SUCCESS)
+            throw std::runtime_error("failed to submit draw command buffer!\n");
     }
 
     void submit_frame(std::vector<VkCommandBuffer>&& command_buffers,
