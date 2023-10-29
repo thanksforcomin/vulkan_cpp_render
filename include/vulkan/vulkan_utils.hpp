@@ -26,6 +26,8 @@ namespace vulkan {
             
     VkSurfaceFormatKHR choose_format(const std::vector<VkSurfaceFormatKHR> &available_formats); 
 
+    VkFormat find_format(VkPhysicalDevice &dev, std::vector<VkFormat> candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
     std::vector<VkImage> get_swap_chain_images(VkDevice &dev, VkSwapchainKHR &swap_chain);
 
     VkCommandBufferBeginInfo get_command_buffer_begin_info(VkCommandBufferUsageFlags flags = 0);
@@ -44,12 +46,16 @@ namespace vulkan {
 
     VkAttachmentDescription get_depth_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
 
+    VkSubpassDependency get_subpass_dependency(uint32_t dst_subpass);
+
     VkViewport get_viewport(VkExtent2D &extent);
 
     VkSubmitInfo get_submit_info(VkCommandBuffer &command_buffer,
                                  std::vector<VkSemaphore>& wait_semaphores,
                                  std::vector<VkSemaphore>& sig_semaphores,
                                  uint32_t& wait_stages);
+
+    VkSubmitInfo get_submit_info(VkCommandBuffer &command_buffer);
 
     void submit_command_buffer(const VkQueue& queue, VkSubmitInfo* submit_info, VkFence& fence);
     
@@ -68,6 +74,4 @@ namespace vulkan {
     allocated_buffer allocate_buffer(VmaAllocator &allocator, VkDeviceSize size, VkBufferUsageFlags flags, VmaMemoryUsage usage);
 
     void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size);
-
-    
 }

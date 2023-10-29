@@ -168,6 +168,21 @@ namespace vulkan {
         return available_formats[0];
     }
 
+    VkFormat find_format(VkPhysicalDevice &dev, std::vector<VkFormat> candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+        for (VkFormat format : candidates) {
+            VkFormatProperties properties;
+            vkGetPhysicalDeviceFormatProperties(dev, format, &properties);
+
+            if (tiling == VK_IMAGE_TILING_LINEAR && (properties.linearTilingFeatures & features) == features) {
+                return format;
+            } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (properties.optimalTilingFeatures & features) == features) {
+                return format;
+            }
+        }
+
+        throw std::runtime_error("couldn't find a matching format");
+    }
+
     std::vector<VkImage> get_swap_chain_images(VkDevice &dev, VkSwapchainKHR &swap_chain) {
         uint32_t image_count;
         vkGetSwapchainImagesKHR(dev, swap_chain, &image_count, nullptr);
@@ -262,6 +277,17 @@ namespace vulkan {
         };
     };
 
+    VkSubpassDependency get_subpass_dependency(uint32_t dst_subpass) {
+        return VkSubpassDependency {
+            .srcSubpass = VK_SUBPASS_EXTERNAL,
+            .dstSubpass = dst_subpass,
+            .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .srcAccessMask = 0,
+            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+        };
+    }
+
     VkViewport get_viewport(VkExtent2D &extent) {
         return VkViewport {
             .x = 0.0f,
@@ -288,6 +314,15 @@ namespace vulkan {
             .signalSemaphoreCount = (uint32_t)sig_semaphores.size(),
             .pSignalSemaphores = sig_semaphores.data(),
             .pWaitDstStageMask = &wait_stages
+        };
+    }
+
+    VkSubmitInfo get_submit_info(VkCommandBuffer &command_buffer) {
+        return VkSubmitInfo{
+            .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .pNext = nullptr,
+            .commandBufferCount = 1,
+            .pCommandBuffers = &command_buffer
         };
     }
 

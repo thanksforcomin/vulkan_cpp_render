@@ -15,7 +15,7 @@ namespace engine {
             const VkShaderStageFlagBits type;
             const VulkanContext *vulkan_context;
         public:
-            Shader(std::string filepath, VulkanContext *context, VkShaderStageFlagBits shader_type = VK_SHADER_STAGE_ALL);
+            Shader(VulkanContext *context, std::string filepath, VkShaderStageFlagBits shader_type = VK_SHADER_STAGE_ALL);
             ~Shader();
 
             std::string path;

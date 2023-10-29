@@ -84,4 +84,8 @@ namespace engine {
     CommandPool::~CommandPool() {
         vkDestroyCommandPool(context->device.logical, command_pool, nullptr);
     }
+
+    void CommandPool::reset() {
+        vkResetCommandPool(context->device.logical, command_pool, 0);
+    }
 }

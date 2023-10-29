@@ -16,6 +16,7 @@ namespace engine {
             ~RenderPass();
 
             void init_default(); //one subpass, values taken from vulkan context
+            void init();
  
             VkRenderPass render_pass;
             VkRenderPassBeginInfo begin_info;

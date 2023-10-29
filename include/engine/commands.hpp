@@ -47,6 +47,8 @@ namespace engine {
             CommandPool(CommandPool &&pool);
             ~CommandPool();
 
+            void reset();
+
             VkCommandPool command_pool;
     };
 }

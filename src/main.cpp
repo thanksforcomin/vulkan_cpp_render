@@ -12,9 +12,11 @@
 #include "include/engine/frame.hpp"
 #include "include/engine/renderpass.hpp"
 #include "include/engine/descriptor.hpp"
+#include "include/engine/fwdplus.hpp"
 
 #include "include/vulkan/pipeline.hpp"
 #include "include/vulkan/vertex.hpp"
+#include "include/vulkan/builder.hpp"
 
 #include <iostream>
 #include <memory>
@@ -33,6 +35,15 @@ int main() {
     std::vector<std::unique_ptr<engine::Frame>> frames;
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
+
+    engine::RenderPass depth_render_pass(&context);
+    depth_render_pass.render_pass = vulkan::renderpass_builder()
+                                    .push_subpass(VK_PIPELINE_BIND_POINT_GRAPHICS)
+                                    .push_depth_attachment(context.swap_chain.swap_chain_image_format, 
+                                                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL, 
+                                                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+                                    .push_dependency(0)
+                                    .create(context.device.logical);
 
     engine::RenderPass main_render_pass(&context);
     main_render_pass.init_default();
@@ -53,7 +64,11 @@ int main() {
     object_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
     object_set.create_layout();
 
-    VkPipelineLayout layout(vulkan::create_pipeline_layout(context.device.logical, {global_set.layout, object_set.layout}));  
+    //engine::Shader vertex_shader(&context, "../res/basic_shader/shader.vert", VK_SHADER_STAGE_VERTEX_BIT);
+    //engine::Shader fragment_shader(&context, "../res/basic_shader/shader.frag", VK_SHADER_STAGE_FRAGMENT_BIT);
+
+    VkPipelineLayout layout(vulkan::create_pipeline_layout(context.device.logical, {global_set.layout, object_set.layout}));
+    //VkPipeline graphics_pipeline(fwd_plus::create_classic_pipeline(&context, ));
     
     //main loop
     while(!glfwWindowShouldClose(context.game_window)) {
@@ -73,7 +88,7 @@ int main() {
         frame->command_buffer.end();
 
         frame->command_buffer.submit({frame->present_semaphore}, {frame->graphics_semaphore}, frame->fence, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-        
+
         context.present(frame.get(), &swap_chain_image_index);
 
         glfwPollEvents();

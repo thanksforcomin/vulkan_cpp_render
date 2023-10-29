@@ -69,5 +69,10 @@ namespace engine {
         cmd_buffer.begin();
         function(cmd_buffer.command_buffer);
         cmd_buffer.end();
+        VkSubmitInfo submit_info(vulkan::get_submit_info(cmd_buffer.command_buffer));
+        vulkan::submit_command_buffer(context->graphics_queue, &submit_info, fence);
+        vkWaitForFences(context->device.logical, 1, &fence, true, 1000000000);
+        vkResetFences(context->device.logical, 1, &fence);
+        cmd_pool.reset();
     }
 }
