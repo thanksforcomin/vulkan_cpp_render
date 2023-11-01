@@ -27,7 +27,15 @@ struct example {
 
 int main() {
     //engine::compile_shader("../res/basic_shader/shader.vert");
-    engine::VulkanContext context;
+    std::vector<const char*> instance_extensions{VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
+    std::vector<const char*> device_extensions{VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME, 
+                                               VK_KHR_MAINTENANCE2_EXTENSION_NAME,
+                                               VK_KHR_MULTIVIEW_EXTENSION_NAME,
+                                               VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME,
+                                               VK_KHR_DEPTH_STENCIL_RESOLVE_EXTENSION_NAME,
+                                               VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+    engine::VulkanContext context(instance_extensions, device_extensions);
 
     uint32_t curr_frame = 0;
 
@@ -39,14 +47,24 @@ int main() {
     engine::RenderPass depth_render_pass(&context);
     depth_render_pass.render_pass = vulkan::renderpass_builder()
                                     .push_subpass(VK_PIPELINE_BIND_POINT_GRAPHICS)
-                                    .push_depth_attachment(context.swap_chain.swap_chain_image_format, 
+                                    .push_depth_attachment(vulkan::find_depth_format(context.device.physical), 
                                                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL, 
                                                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
                                     .push_dependency(0)
                                     .create(context.device.logical);
 
     engine::RenderPass main_render_pass(&context);
-    main_render_pass.init_default();
+    main_render_pass.render_pass = vulkan::renderpass_builder()
+                                   .push_subpass(VK_PIPELINE_BIND_POINT_GRAPHICS)
+                                   .push_color_attachment(context.swap_chain.swap_chain_image_format,
+                                                          VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                                                          VK_IMAGE_LAYOUT_UNDEFINED)
+                                   .push_depth_attachment(vulkan::find_depth_format(context.device.physical),
+                                                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL)
+                                   .push_dependency(0)
+                                   .create(context.device.logical);
+    //main_render_pass.init_default();
     context.swap_chain.create_framebuffers(main_render_pass);
 
     engine::DescriptorPool pool(&context);

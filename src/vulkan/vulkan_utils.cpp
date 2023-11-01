@@ -20,10 +20,10 @@ namespace vulkan {
         return {glfwExtensions, glfwExtensions + glfwExtensionCount};
     }
 
-    bool is_device_valid(VkPhysicalDevice &dev, VkSurfaceKHR &surface) {
+    bool is_device_valid(VkPhysicalDevice &dev, VkSurfaceKHR &surface, std::vector<const char*>& device_extensions) {
         queue_family_indicies indicies = find_queue_family(dev, surface);
 
-        bool supports_extensions = device_extensions_support(dev, {VK_KHR_SWAPCHAIN_EXTENSION_NAME});
+        bool supports_extensions = device_extensions_support(dev, device_extensions);
         bool swap_chain_suitable = 0;
         if (supports_extensions)
         {
@@ -34,7 +34,7 @@ namespace vulkan {
         return indicies.is_complete() && supports_extensions && swap_chain_suitable;
     }
 
-    bool device_extensions_support(VkPhysicalDevice &dev, std::vector<const char*> extensions) {
+    bool device_extensions_support(VkPhysicalDevice &dev, std::vector<const char*>& extensions) {
         uint32_t extension_count;
         vkEnumerateDeviceExtensionProperties(dev, nullptr, &extension_count, nullptr);
 
@@ -181,6 +181,15 @@ namespace vulkan {
         }
 
         throw std::runtime_error("couldn't find a matching format");
+    }
+
+    VkFormat find_depth_format(VkPhysicalDevice &dev) {
+        return find_format(
+            dev,
+            {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+            VK_IMAGE_TILING_OPTIMAL,
+            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+        );
     }
 
     std::vector<VkImage> get_swap_chain_images(VkDevice &dev, VkSwapchainKHR &swap_chain) {
@@ -392,5 +401,48 @@ namespace vulkan {
         vmaMapMemory(*buffer.allocator, buffer.allocation, &ptr);
         memcpy(ptr, data, size);
         vmaUnmapMemory(*buffer.allocator, buffer.allocation);
+    }
+
+    VkRenderingInfoKHR get_rendering_info(VkRect2D rendering_area, 
+                                          VkRenderingAttachmentInfoKHR *color_attachment, 
+                                          VkRenderingAttachmentInfoKHR *depth_attachment, 
+                                          VkRenderingAttachmentInfoKHR *stencil_attachment,
+                                          uint32_t layer_count,
+                                          uint32_t color_attachment_count)
+    {
+        return VkRenderingInfoKHR {
+            .sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR,
+            .pNext = nullptr,
+            .renderArea = rendering_area,
+            .layerCount = layer_count,
+            .colorAttachmentCount = color_attachment_count,
+            .pColorAttachments = color_attachment,
+            .pDepthAttachment = depth_attachment,
+            .pStencilAttachment = stencil_attachment
+        };
+    }
+
+    VkRenderingAttachmentInfoKHR get_rendering_attachment_info(VkImageView &image_view, 
+                                                               VkImageLayout image_layout,
+                                                               VkClearValue clear_val, 
+                                                               VkAttachmentLoadOp load_op,
+                                                               VkAttachmentStoreOp store_op)
+    {
+        return VkRenderingAttachmentInfoKHR {
+            .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR,
+            .pNext = nullptr,
+            .imageView = image_view,
+            .imageLayout = image_layout,
+            .loadOp = load_op,
+            .storeOp = store_op,
+            .clearValue = clear_val
+        };
+    }
+
+    VkPhysicalDeviceDynamicRenderingFeaturesKHR get_dynamic_rendering_features() {
+        return VkPhysicalDeviceDynamicRenderingFeaturesKHR {
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR,
+            .dynamicRendering = VK_TRUE
+        };
     }
 }

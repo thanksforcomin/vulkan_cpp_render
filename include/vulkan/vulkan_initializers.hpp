@@ -15,11 +15,11 @@ namespace glfw {
 namespace vulkan {
     VkSurfaceKHR create_surface(VkInstance &inst, GLFWwindow *window);
 
-    VkInstance create_instance(std::string application_name);
+    VkInstance create_instance(std::string application_name, std::vector<const char*> extensions = {});
 
-    VkPhysicalDevice create_physical_device(VkInstance &inst, VkSurfaceKHR &surface);
+    VkPhysicalDevice create_physical_device(VkInstance &inst, VkSurfaceKHR &surface, std::vector<const char*>& device_extensions);
 
-    VkDevice create_logical_device(VkPhysicalDevice &dev, VkSurfaceKHR &surface);
+    VkDevice create_logical_device(VkPhysicalDevice &dev, VkSurfaceKHR &surface, std::vector<const char*>& device_extensions);
 
     VkQueue create_queue(VkDevice &dev, uint32_t queue_family_index);
     
@@ -30,7 +30,7 @@ namespace vulkan {
 
     VkImageView create_image_view(VkDevice &dev, VkImage &image, VkFormat &format);
 
-    VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent);
+    VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent, uint32_t attachment_count = 1);
 
     VkCommandPool create_command_pool(VkDevice &dev, VkCommandPoolCreateFlags flags, uint32_t queue_family_index);
 

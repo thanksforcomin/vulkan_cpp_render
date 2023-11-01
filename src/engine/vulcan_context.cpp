@@ -19,14 +19,15 @@ Redesign Window class to be static, design the queue_family to be in two separat
 
 namespace engine
 {
-    VulkanContext::VulkanContext() : game_window(glfw::create_window(720, 720)),
-                                     instance(vulkan::create_instance("minivan")),
-                                     surface(vulkan::create_surface(instance, game_window)),
-                                     device(load_device()),
-                                     queue_family(vulkan::find_queue_family(device.physical, surface)),
-                                     graphics_queue(vulkan::create_queue(device.logical, queue_family.graphics_family.value())),
-                                     present_queue(vulkan::create_queue(device.logical, queue_family.present_family.value())),
-                                     swap_chain(this)
+    VulkanContext::VulkanContext(std::vector<const char*> extensions, std::vector<const char*> device_extensions) : 
+        game_window(glfw::create_window(720, 720)),
+        instance(vulkan::create_instance("minivan", extensions)),
+        surface(vulkan::create_surface(instance, game_window)),
+        device(load_device(device_extensions)),
+        queue_family(vulkan::find_queue_family(device.physical, surface)),
+        graphics_queue(vulkan::create_queue(device.logical, queue_family.graphics_family.value())),
+        present_queue(vulkan::create_queue(device.logical, queue_family.present_family.value())),
+        swap_chain(this)
     {
         create_allocator();
         std::cout << "new vulkan context\n";
@@ -39,11 +40,11 @@ namespace engine
         vkDestroyInstance(instance, nullptr);
     }
 
-    vulkan::vulkan_device VulkanContext::load_device()
+    vulkan::vulkan_device VulkanContext::load_device(std::vector<const char*> device_extensions)
     {
         vulkan::vulkan_device dev;
-        dev.physical = vulkan::create_physical_device(instance, surface);
-        dev.logical = vulkan::create_logical_device(dev.physical, surface);
+        dev.physical = vulkan::create_physical_device(instance, surface, device_extensions);
+        dev.logical = vulkan::create_logical_device(dev.physical, surface, device_extensions);
         std::cout << "device created\n";
         return dev;
     }

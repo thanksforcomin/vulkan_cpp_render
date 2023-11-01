@@ -10,9 +10,9 @@
 namespace vulkan {
     std::vector<const char*> require_extensions();
 
-    bool is_device_valid(VkPhysicalDevice &dev, VkSurfaceKHR &surface);
+    bool is_device_valid(VkPhysicalDevice &dev, VkSurfaceKHR &surface, std::vector<const char*>& device_extensions);
 
-    bool device_extensions_support(VkPhysicalDevice &dev, std::vector<const char*> extensions);
+    bool device_extensions_support(VkPhysicalDevice &dev, std::vector<const char*>& extensions);
 
     bool validation_layers_support(std::vector<const char *> validation_layers);
 
@@ -27,6 +27,8 @@ namespace vulkan {
     VkSurfaceFormatKHR choose_format(const std::vector<VkSurfaceFormatKHR> &available_formats); 
 
     VkFormat find_format(VkPhysicalDevice &dev, std::vector<VkFormat> candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
+    VkFormat find_depth_format(VkPhysicalDevice &dev);
 
     std::vector<VkImage> get_swap_chain_images(VkDevice &dev, VkSwapchainKHR &swap_chain);
 
@@ -74,4 +76,19 @@ namespace vulkan {
     allocated_buffer allocate_buffer(VmaAllocator &allocator, VkDeviceSize size, VkBufferUsageFlags flags, VmaMemoryUsage usage);
 
     void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size);
+
+    VkRenderingInfoKHR get_rendering_info(VkRect2D rendering_area, 
+                                          VkRenderingAttachmentInfoKHR *color_attachment, 
+                                          VkRenderingAttachmentInfoKHR *depth_attachment, 
+                                          VkRenderingAttachmentInfoKHR *stencil_attachment,
+                                          uint32_t layer_count = 1,
+                                          uint32_t color_attachment_count = 1);
+                                          
+    VkRenderingAttachmentInfoKHR get_rendering_attachment_info(VkImageView &image_view, 
+                                                               VkImageLayout image_layout,
+                                                               VkClearValue clear_val, 
+                                                               VkAttachmentLoadOp load_op = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                               VkAttachmentStoreOp store_op = VK_ATTACHMENT_STORE_OP_STORE);
+
+    VkPhysicalDeviceDynamicRenderingFeaturesKHR get_dynamic_rendering_features();
 }

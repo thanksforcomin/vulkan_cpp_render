@@ -32,8 +32,9 @@ namespace vulkan {
     /*
      * Creates a Vulkan instance with the specified application name.
      */
-    VkInstance create_instance(std::string applicaion_name) {
+    VkInstance create_instance(std::string applicaion_name, std::vector<const char*> extensions) {
         std::vector<const char *> required_extensions = require_extensions();
+        required_extensions.insert(required_extensions.end(), extensions.begin(), extensions.end());
         std::vector<const char *> validation_layers{"VK_LAYER_KHRONOS_validation"};
 
         if(!validation_layers_support(validation_layers))
@@ -64,7 +65,7 @@ namespace vulkan {
     /*
      * Creates a physical device for Vulkan rendering.
      */
-    VkPhysicalDevice create_physical_device(VkInstance &inst, VkSurfaceKHR& surface) {
+    VkPhysicalDevice create_physical_device(VkInstance &inst, VkSurfaceKHR& surface, std::vector<const char*>& device_extensions) {
         unsigned int device_count = 0;
         vkEnumeratePhysicalDevices(inst, &device_count, nullptr);
 
@@ -76,7 +77,7 @@ namespace vulkan {
 
         for (auto &dev : available_devices)
         {
-            if (is_device_valid(dev, surface))
+            if (is_device_valid(dev, surface, device_extensions))
             {
                 VkPhysicalDeviceProperties device_properties;
                 vkGetPhysicalDeviceProperties(dev, &device_properties);
@@ -92,12 +93,11 @@ namespace vulkan {
     /**
     * Creates a logical device for Vulkan graphics rendering.
     */
-    VkDevice create_logical_device(VkPhysicalDevice &dev, VkSurfaceKHR &surface) {
+    VkDevice create_logical_device(VkPhysicalDevice &dev, VkSurfaceKHR &surface, std::vector<const char*>& device_extensions) {
         queue_family_indicies queue_family = find_queue_family(dev, surface);
         std::set<uint32_t> unique_family_queues = {queue_family.graphics_family.value(), queue_family.present_family.value()};
 
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-        std::vector<const char *> required_device_extensions{VK_KHR_SWAPCHAIN_EXTENSION_NAME};
         VkPhysicalDeviceFeatures device_fetures = {};
 
         float queue_priority = 1.0f;
@@ -112,9 +112,9 @@ namespace vulkan {
             queue_create_infos.push_back(queue_create_info);
         }
 
-        VkDeviceCreateInfo create_info = vulkan::logical_device_create_info(&device_fetures, queue_create_infos, required_device_extensions); // logical device create info
-
-        // i have no idea what im doing please help
+        VkDeviceCreateInfo create_info = vulkan::logical_device_create_info(&device_fetures, queue_create_infos, device_extensions); // logical device create info
+        VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamic_rendering_features = vulkan::get_dynamic_rendering_features(); //is's two integers so not that bad
+        
         VkDevice log_dev;
         if (vkCreateDevice(dev, &create_info, nullptr, &log_dev) != VK_SUCCESS)
             std::runtime_error("failed to create device\n");
@@ -157,8 +157,8 @@ namespace vulkan {
         return image_view;
     }
 
-    VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent) {
-        VkFramebufferCreateInfo create_info{framebuffer_create_info(image_attachment, render_pass, extent.width, extent.height)};
+    VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent, uint32_t attachment_count) {
+        VkFramebufferCreateInfo create_info{framebuffer_create_info(image_attachment, render_pass, extent.width, extent.height, 2)};
         VkFramebuffer framebuffer;
         if (vkCreateFramebuffer(dev, &create_info, nullptr, &framebuffer) != VK_SUCCESS)
             throw std::runtime_error("failed to create framebuffer\n");

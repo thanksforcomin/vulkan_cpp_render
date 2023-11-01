@@ -126,13 +126,14 @@ namespace vulkan {
                                                     VkRenderPass &render_pass,
                                                     uint32_t width,
                                                     uint32_t height,
+                                                    uint32_t attachment_count = 1,
                                                     uint32_t layers = 1)
     {
         return VkFramebufferCreateInfo {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
             .pNext = nullptr,
             .renderPass = render_pass,
-            .attachmentCount = 1,
+            .attachmentCount = attachment_count,
             .width = width,
             .height = height,
             .layers = layers,

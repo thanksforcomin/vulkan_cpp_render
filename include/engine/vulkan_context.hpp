@@ -30,14 +30,14 @@ namespace engine {
             friend class SwapChain;
             friend class Shader;
 
-            VulkanContext();
+            VulkanContext(std::vector<const char*> extensions, std::vector<const char*> device_extensions);
             ~VulkanContext();
             
             void submit(const Frame *fr);
             void present(const Frame *fr, uint32_t *index);
 
         private:
-            vulkan::vulkan_device load_device();
+            vulkan::vulkan_device load_device(std::vector<const char*> device_extensions);
             void set_debug_messenger();
             void create_allocator();
 

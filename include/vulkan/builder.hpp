@@ -46,7 +46,7 @@ namespace vulkan {
             return *this;
         }
 
-        renderpass_builder push_color_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout) {
+        renderpass_builder push_color_attachment(VkFormat format, VkImageLayout fin_layout, VkImageLayout init_layout) {
             attachments.push_back(vulkan::get_color_attachment(format, fin_layout, init_layout));
             attachment_references.push_back(VkAttachmentReference {(uint32_t)attachments.size() - 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL});
             subpasses.back().colorAttachmentCount += 1;
@@ -54,7 +54,7 @@ namespace vulkan {
             return *this;
         }
 
-        renderpass_builder push_depth_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout) {
+        renderpass_builder push_depth_attachment(VkFormat format, VkImageLayout fin_layout, VkImageLayout init_layout) {
             attachments.push_back(vulkan::get_depth_attachment(format, fin_layout, init_layout));
             attachment_references.push_back(VkAttachmentReference {(uint32_t)attachments.size() - 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL});
             subpasses.back().pDepthStencilAttachment = &attachment_references.back();
@@ -62,7 +62,7 @@ namespace vulkan {
         }
 
         //TODO: make it make sense
-        renderpass_builder push_resolve_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout) {
+        renderpass_builder push_resolve_attachment(VkFormat format, VkImageLayout fin_layout, VkImageLayout init_layout) {
             attachments.push_back(vulkan::get_color_attachment(format, fin_layout, init_layout));
             attachment_references.push_back(VkAttachmentReference {(uint32_t)attachments.size() - 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL});
             subpasses.back().pResolveAttachments = &attachment_references.back();
