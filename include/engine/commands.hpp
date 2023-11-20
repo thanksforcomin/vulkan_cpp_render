@@ -3,6 +3,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <functional>
 #include <vector>
 
 namespace engine {
@@ -29,6 +30,7 @@ namespace engine {
                         std::vector<VkSemaphore> signal_semop,
                         VkFence fence,
                         uint32_t wait_stages = 0);
+            void record(std::function<void(VkCommandBuffer)> data);
             
             VkCommandBuffer command_buffer;
 

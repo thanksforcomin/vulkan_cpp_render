@@ -45,27 +45,8 @@ int main() {
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
 
     engine::RenderPass depth_render_pass(&context);
-    depth_render_pass.render_pass = vulkan::renderpass_builder()
-                                    .push_subpass(VK_PIPELINE_BIND_POINT_GRAPHICS)
-                                    .push_depth_attachment(vulkan::find_depth_format(context.device.physical), 
-                                                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL, 
-                                                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
-                                    .push_dependency(0)
-                                    .create(context.device.logical);
-
-    engine::RenderPass main_render_pass(&context);
-    main_render_pass.render_pass = vulkan::renderpass_builder()
-                                   .push_subpass(VK_PIPELINE_BIND_POINT_GRAPHICS)
-                                   .push_color_attachment(context.swap_chain.swap_chain_image_format,
-                                                          VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                                                          VK_IMAGE_LAYOUT_UNDEFINED)
-                                   .push_depth_attachment(vulkan::find_depth_format(context.device.physical),
-                                                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-                                                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL)
-                                   .push_dependency(0)
-                                   .create(context.device.logical);
     //main_render_pass.init_default();
-    context.swap_chain.create_framebuffers(main_render_pass);
+    //context.swap_chain.create_framebuffers(main_render_pass);
 
     engine::DescriptorPool pool(&context);
     pool.push(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 100);
@@ -74,13 +55,25 @@ int main() {
     pool.init();
 
     engine::DescriptorSetLayout global_set(&context);
-    global_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
-    global_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+    global_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0); //camera data
     global_set.create_layout();
 
     engine::DescriptorSetLayout object_set(&context);
     object_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
     object_set.create_layout();
+
+    engine::DescriptorSetLayout light_culling_set(&context);
+    light_culling_set.push_layout_binding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+    light_culling_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+    light_culling_set.create_layout();
+
+    engine::DescriptorSetLayout intermediate_set(&context);
+    intermediate_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+
+    engine::DescriptorSetLayout material_set(&context);
+    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2);
 
     //engine::Shader vertex_shader(&context, "../res/basic_shader/shader.vert", VK_SHADER_STAGE_VERTEX_BIT);
     //engine::Shader fragment_shader(&context, "../res/basic_shader/shader.frag", VK_SHADER_STAGE_FRAGMENT_BIT);

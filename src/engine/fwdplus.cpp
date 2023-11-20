@@ -2,7 +2,6 @@
 
 namespace fwd_plus {
     VkPipeline create_classic_pipeline(engine::VulkanContext &context,
-                                       VkRenderPass &render_pass, 
                                        VkPipelineLayout &pipeline_layout, 
                                        VkPipelineShaderStageCreateInfo &vertex_shader, 
                                        VkPipelineShaderStageCreateInfo &fragment_shader) 
@@ -37,7 +36,6 @@ namespace fwd_plus {
     }
 
     VkPipeline create_depth_pipeline(engine::VulkanContext &context, 
-                                     VkRenderPass &render_pass, 
                                      VkPipelineLayout pipeline_layout,
                                      VkPipelineShaderStageCreateInfo &vertex_shader)
     {

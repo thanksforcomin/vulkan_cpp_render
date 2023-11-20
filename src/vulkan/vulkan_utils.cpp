@@ -248,13 +248,13 @@ namespace vulkan {
         };
     };
 
-    pipeline::pipeline_builder begin_pipeline_builder(VkRenderPass &render_pass, VkPipelineLayout &layout, uint32_t subpass) {
+    pipeline::pipeline_builder begin_pipeline_builder(VkPipelineLayout &layout, uint32_t subpass) {
         pipeline::pipeline_builder builder;
         builder.create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         builder.create_info.basePipelineHandle = VK_NULL_HANDLE;
         builder.create_info.basePipelineIndex = -1;
         builder.create_info.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
-        builder.create_info.renderPass = render_pass;
+        builder.create_info.renderPass = nullptr;
         builder.create_info.subpass = subpass;
         builder.create_info.layout = layout;
         return builder;
@@ -444,5 +444,33 @@ namespace vulkan {
             .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR,
             .dynamicRendering = VK_TRUE
         };
+    }
+    
+    void change_image_layout(VkCommandBuffer &cmd_buffer, VkImage &image, VkImageLayout old_layout, VkImageLayout new_layout) {
+        const VkImageMemoryBarrier barrier {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+            .pNext = nullptr,
+            .oldLayout = old_layout,
+            .newLayout = new_layout,
+            .image = image,
+            .subresourceRange = {
+                .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1
+            }
+        };
+
+        vkCmdPipelineBarrier(cmd_buffer, 
+                             VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, 
+                             VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, 
+                             0, 
+                             0, 
+                             nullptr, 
+                             0, 
+                             nullptr, 
+                             1, 
+                             &barrier);
     }
 }

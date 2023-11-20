@@ -26,7 +26,7 @@ namespace vulkan {
     VkSwapchainKHR create_swap_chain(vulkan_device &vulkan_dev, VkSurfaceKHR &surface, queue_family_indicies indicies, swap_chain_support_details support_details, 
                                      GLFWwindow *window, VkSurfaceFormatKHR format, VkExtent2D extent, VkPresentModeKHR present_mode);
                                     
-    VkImage create_image(VmaAllocator &allocator, allocated_buffer &buffer, VkDevice &dev, VkFormat format, VkExtent2D extent);
+    VkImage create_image(VkDevice &dev, VkFormat format, VkImageUsageFlags usage, VkExtent3D &extent);
 
     VkImageView create_image_view(VkDevice &dev, VkImage &image, VkFormat &format);
 

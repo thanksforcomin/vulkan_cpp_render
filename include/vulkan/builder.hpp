@@ -32,6 +32,7 @@ namespace vulkan {
         }
     };
 
+    //TODO: we yeeted the renderpass mechanism, delete that shit
     struct renderpass_builder {
         std::vector<VkAttachmentDescription> attachments;
         std::vector<VkAttachmentReference> attachment_references;

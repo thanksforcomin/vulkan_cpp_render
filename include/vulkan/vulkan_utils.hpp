@@ -42,7 +42,7 @@ namespace vulkan {
 
     VkWriteDescriptorSet get_descriptor_write_info(VkDescriptorType type, VkDescriptorSet dst_set, uint32_t binding, VkDescriptorBufferInfo &buffer_info);
 
-    pipeline::pipeline_builder begin_pipeline_builder(VkRenderPass &render_pass, VkPipelineLayout &layout, uint32_t subpass = 0);
+    pipeline::pipeline_builder begin_pipeline_builder(VkPipelineLayout &layout, uint32_t subpass = 0);
 
     VkAttachmentDescription get_color_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
 
@@ -91,4 +91,8 @@ namespace vulkan {
                                                                VkAttachmentStoreOp store_op = VK_ATTACHMENT_STORE_OP_STORE);
 
     VkPhysicalDeviceDynamicRenderingFeaturesKHR get_dynamic_rendering_features();
+
+    void end_rendering();
+
+    void change_image_layout(VkCommandBuffer &cmd_buffer, VkImage &image, VkImageLayout old_layout, VkImageLayout new_layout);
 }

@@ -114,6 +114,7 @@ namespace vulkan {
 
         VkDeviceCreateInfo create_info = vulkan::logical_device_create_info(&device_fetures, queue_create_infos, device_extensions); // logical device create info
         VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamic_rendering_features = vulkan::get_dynamic_rendering_features(); //is's two integers so not that bad
+        create_info.pNext = &dynamic_rendering_features;
         
         VkDevice log_dev;
         if (vkCreateDevice(dev, &create_info, nullptr, &log_dev) != VK_SUCCESS)
@@ -146,6 +147,14 @@ namespace vulkan {
         VkSwapchainKHR swap_chain;
         vkCreateSwapchainKHR(vulkan_dev.logical, &create_info, nullptr, &swap_chain);
         return swap_chain;
+    }
+
+    VkImage create_image(VkDevice &dev, VkFormat format, VkImageUsageFlags usage, VkExtent3D &extent) {
+        VkImage img;
+        VkImageCreateInfo create_info{image_create_info(format, usage, extent)};
+        if (vkCreateImage(dev, &create_info, nullptr, &img) != VK_SUCCESS)
+            throw std::runtime_error("failed to create image\n");
+        return img;
     }
 
     VkImageView create_image_view(VkDevice &dev, VkImage &image, VkFormat &format)

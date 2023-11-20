@@ -66,6 +66,12 @@ namespace engine {
         );
         vulkan::submit_command_buffer(context->graphics_queue, &submit_info, fence);
     }
+
+    void CommandBuffer::record(std::function<void(VkCommandBuffer)> data) {
+        begin();
+        data(command_buffer);
+        end();
+    }
 }
 
 namespace engine {

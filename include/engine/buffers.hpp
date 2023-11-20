@@ -21,15 +21,15 @@ namespace engine {
         vulkan::allocated_buffer buffer;
     };
 
-    class UniformBuffer {
+    class Buffer {
     private:    
         VulkanContext *context;
 
     public:
-        UniformBuffer() = delete;
+        Buffer() = delete;
 
         template<typename T>
-        UniformBuffer(VulkanContext *vulkan_context) :
+        Buffer(VulkanContext *vulkan_context) :
             context(vulkan_context),
             buffer(
                 vulkan::allocate_buffer(
@@ -40,18 +40,8 @@ namespace engine {
                 )
             )
         { }
-        ~UniformBuffer();
+        ~Buffer();
 
         vulkan::allocated_buffer buffer;
-    };
-
-    class Image {
-    private:
-        VulkanContext *context;
-
-    public:
-        Image() = delete;
-        Image(VulkanContext *vulkan_context, std::string filepath);
-        ~Image();
     };
 }
