@@ -22,7 +22,7 @@ namespace fwd_plus {
         };
 
         //TODO: multiple subpass something something
-        return vulkan::begin_pipeline_builder(render_pass, pipeline_layout, 0)
+        return vulkan::begin_pipeline_builder(pipeline_layout, 0)
         .vertex_assembly(vulkan::pipeline::vertex_assembly_info(&vulkan::vertex::bind_description, &vulkan::vertex::attrib_descriptions[0], 4))
         .input_assembly(vulkan::pipeline::input_assembly_info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST))
         .viewport(vulkan::pipeline::viewport_info(&viewport, &scissors))
@@ -44,7 +44,7 @@ namespace fwd_plus {
             .extent = context.swap_chain.swap_chain_extent,
             .offset = { 0, 0 }
         };
-        return vulkan::begin_pipeline_builder(render_pass, pipeline_layout, 0)
+        return vulkan::begin_pipeline_builder(pipeline_layout, 0)
         .vertex_assembly(vulkan::pipeline::vertex_assembly_info(&vulkan::vertex::bind_description, &vulkan::vertex::attrib_descriptions[0], 4))
         .input_assembly(vulkan::pipeline::input_assembly_info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST))
         .viewport(vulkan::pipeline::viewport_info(&viewport, &scissors))

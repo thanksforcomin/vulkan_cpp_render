@@ -30,6 +30,8 @@ namespace vulkan {
 
     VkFormat find_depth_format(VkPhysicalDevice &dev);
 
+    VkExtent3D extent_2d_to_3d(VkExtent2D extent);
+
     std::vector<VkImage> get_swap_chain_images(VkDevice &dev, VkSwapchainKHR &swap_chain);
 
     VkCommandBufferBeginInfo get_command_buffer_begin_info(VkCommandBufferUsageFlags flags = 0);
@@ -88,7 +90,7 @@ namespace vulkan {
                                           
     VkRenderingAttachmentInfoKHR get_rendering_attachment_info(VkImageView &image_view, 
                                                                VkImageLayout image_layout,
-                                                               VkClearValue clear_val, 
+                                                               VkClearValue clear_val = {0.0f, 0.0f, 0.0f, 1.0f},
                                                                VkAttachmentLoadOp load_op = VK_ATTACHMENT_LOAD_OP_CLEAR,
                                                                VkAttachmentStoreOp store_op = VK_ATTACHMENT_STORE_OP_STORE);
 

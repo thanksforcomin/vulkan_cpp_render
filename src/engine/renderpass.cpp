@@ -36,17 +36,3 @@ namespace engine {
         begin_info = vulkan::get_render_pass_begin_info(render_pass, { {0, 0}, context->swap_chain.swap_chain_extent }, clear_values.data(), clear_values.size());
     }
 }
-
-namespace engine {
-    DynamicRenderPass::DynamicRenderPass(VulkanContext *vulkan_context) :
-        context(vulkan_context), id(next_id++)
-    { };
-
-    DynamicRenderPass::~DynamicRenderPass() { };
-
-    void DynamicRenderPass::set_color_attachment(Attachment& attachment) {
-        color_attachment = attachment.attachment_description;
-    }
-
-    int DynamicRenderPass::next_id = 0;
-}

@@ -193,6 +193,14 @@ namespace vulkan {
         );
     }
 
+    VkExtent3D extent_2d_to_3d(VkExtent2D extent) {
+        return VkExtent3D {
+            .width = extent.width,
+            .height = extent.height,
+            .depth = 1
+        };
+    }
+
     std::vector<VkImage> get_swap_chain_images(VkDevice &dev, VkSwapchainKHR &swap_chain) {
         uint32_t image_count;
         vkGetSwapchainImagesKHR(dev, swap_chain, &image_count, nullptr);

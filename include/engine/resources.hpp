@@ -3,7 +3,7 @@
 #include "include/vulkan/vulkan_utils.hpp"
 #include "include/vulkan/vulkan_initializers.hpp"
 #include "include/engine/vulkan_context.hpp"
-#include "include/engine/buffers.hpp"
+#include "include/engine/image.hpp"
 
 namespace engine {
     class Attachment {
