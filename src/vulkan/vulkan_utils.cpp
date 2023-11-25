@@ -461,6 +461,15 @@ namespace vulkan {
         };
     }
 
+    VkMemoryBarrier memory_barrier(VkAccessFlags src_access_mask, VkAccessFlags dst_access_mask) {
+        return VkMemoryBarrier {
+            .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
+            .pNext = nullptr,
+            .srcAccessMask = src_access_mask,
+            .dstAccessMask = dst_access_mask
+        };
+    }
+
     VkImageMemoryBarrier image_memory_barrier(VkImage &image, VkImageLayout old_layout, VkImageLayout new_layout, VkAccessFlags src_access_mask , VkAccessFlags dst_access_mask) {
         return VkImageMemoryBarrier {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -482,7 +491,29 @@ namespace vulkan {
         };
     }
 
-    void execute_pipeline_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkImageMemoryBarrier& img_barrier) {
+    VkBufferMemoryBarrier buffer_memory_barrier(VkBuffer& buffer, VkAccessFlags src_access_mask, VkAccessFlags dst_access_mask, VkDeviceSize offset, VkDeviceSize size) {
+        return VkBufferMemoryBarrier {
+            .sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+            .pNext = nullptr,
+            .srcAccessMask = src_access_mask,
+            .dstAccessMask = dst_access_mask,
+            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .buffer = buffer,
+            .offset = 0,
+            .size = VK_WHOLE_SIZE
+        };
+    }
+
+    void execute_buffer_pipeline_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkBufferMemoryBarrier& buffer_barrier) {
+        vkCmdPipelineBarrier(cmd_buffer, src_stage_mask, dst_stage_mask, 0, 0, nullptr, 1, &buffer_barrier, 0, nullptr);
+    }
+
+    void execute_image_pipeline_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkImageMemoryBarrier& img_barrier) {
         vkCmdPipelineBarrier(cmd_buffer, src_stage_mask, dst_stage_mask, 0, 0, nullptr, 0, nullptr, 1, &img_barrier);
     }
+
+    void execure_memory_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkMemoryBarrier& memory_barrier) {
+        vkCmdPipelineBarrier(cmd_buffer, src_stage_mask, dst_stage_mask, 0, 1, &memory_barrier, 0, nullptr, 0, nullptr);
+    }    
 }

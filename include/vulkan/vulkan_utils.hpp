@@ -98,7 +98,15 @@ namespace vulkan {
 
     void change_image_layout(VkCommandBuffer &cmd_buffer, VkImage &image, VkImageLayout old_layout, VkImageLayout new_layout);
 
+    VkMemoryBarrier memory_barrier(VkAccessFlags src_access_mask = 0, VkAccessFlags dst_access_mask = 0);
+
     VkImageMemoryBarrier image_memory_barrier(VkImage &image, VkImageLayout old_layout, VkImageLayout new_layout, VkAccessFlags src_access_mask = 0, VkAccessFlags dst_access_mask = 0);
 
+    VkBufferMemoryBarrier buffer_memory_barrier(VkBuffer& buffer, VkAccessFlags src_access_mask = 0, VkAccessFlags dst_access_mask = 0, VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE);
+
+    void execute_buffer_pipeline_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkBufferMemoryBarrier& buffer_barrier);
+
     void execute_image_pipeline_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkImageMemoryBarrier& img_barrier);
+
+    void execure_memory_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkMemoryBarrier& memory_barrier);
 }
