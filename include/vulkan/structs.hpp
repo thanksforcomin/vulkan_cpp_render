@@ -33,4 +33,10 @@ namespace vulkan {
         size_t size;
         VmaAllocator *allocator;
     };
+
+    struct allocated_image {
+        VkImage image;
+        VmaAllocation allocation;
+        VmaAllocator *allocator;
+    };
 }

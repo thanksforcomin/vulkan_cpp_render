@@ -1,4 +1,5 @@
 #include "include/vulkan/vulkan_utils.hpp"
+#include "include/vulkan/vulkan_create_infos.hpp"
 
 #include <set>
 #include <string>
@@ -396,6 +397,20 @@ namespace vulkan {
         return buffer;
     }
 
+    allocated_image allocate_image(VmaAllocator &allocator, VkExtent3D extent, VkFormat format, VkImageUsageFlags flags, VmaMemoryUsage usage) {
+        allocated_image image {
+            .allocator = &allocator
+        };
+
+        VkImageCreateInfo create_info{image_create_info(format, flags, extent)};
+        VmaAllocationCreateInfo allocation_info{
+            .usage = usage
+        };
+
+        vmaCreateImage(allocator, &create_info, &allocation_info, &image.image, &image.allocation, nullptr);
+        return image;
+    }
+
     void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size) {
         void* ptr;
         vmaMapMemory(*buffer.allocator, buffer.allocation, &ptr);
@@ -445,32 +460,29 @@ namespace vulkan {
             .dynamicRendering = VK_TRUE
         };
     }
-    
-    void change_image_layout(VkCommandBuffer &cmd_buffer, VkImage &image, VkImageLayout old_layout, VkImageLayout new_layout) {
-        const VkImageMemoryBarrier barrier {
+
+    VkImageMemoryBarrier image_memory_barrier(VkImage &image, VkImageLayout old_layout, VkImageLayout new_layout, VkAccessFlags src_access_mask , VkAccessFlags dst_access_mask) {
+        return VkImageMemoryBarrier {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
             .pNext = nullptr,
+            .srcAccessMask = src_access_mask,
+            .dstAccessMask = dst_access_mask,
             .oldLayout = old_layout,
             .newLayout = new_layout,
+            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .image = image,
-            .subresourceRange = {
-                .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+            .subresourceRange = VkImageSubresourceRange {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                 .baseMipLevel = 0,
                 .levelCount = 1,
                 .baseArrayLayer = 0,
                 .layerCount = 1
             }
         };
+    }
 
-        vkCmdPipelineBarrier(cmd_buffer, 
-                             VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, 
-                             VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, 
-                             0, 
-                             0, 
-                             nullptr, 
-                             0, 
-                             nullptr, 
-                             1, 
-                             &barrier);
+    void execute_pipeline_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkImageMemoryBarrier& img_barrier) {
+        vkCmdPipelineBarrier(cmd_buffer, src_stage_mask, dst_stage_mask, 0, 0, nullptr, 0, nullptr, 1, &img_barrier);
     }
 }

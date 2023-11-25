@@ -149,7 +149,7 @@ namespace vulkan {
         return swap_chain;
     }
 
-    VkImage create_image(VkDevice &dev, VkFormat format, VkImageUsageFlags usage, VkExtent3D &extent) {
+    VkImage create_image(VkDevice &dev, VkFormat format, VkImageUsageFlags usage, VkExtent3D extent) {
         VkImage img;
         VkImageCreateInfo create_info{image_create_info(format, usage, extent)};
         if (vkCreateImage(dev, &create_info, nullptr, &img) != VK_SUCCESS)

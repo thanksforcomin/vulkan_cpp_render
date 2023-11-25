@@ -14,7 +14,7 @@ namespace engine {
         Image(VulkanContext *vulkan_context, VkImageLayout image_layout);
         ~Image();
 
-        VkImage image;
+        vulkan::allocated_image image;
         VkImageView image_view;
 
         const VkImageLayout layout;
