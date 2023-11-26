@@ -79,6 +79,8 @@ namespace vulkan {
 
     allocated_image allocate_image(VmaAllocator &allocator, VkExtent3D extent, VkFormat format, VkImageUsageFlags flags, VmaMemoryUsage usage);
 
+    void deallocate_buffer(allocated_buffer &&buffer);
+
     void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size);
 
     VkRenderingInfoKHR get_rendering_info(VkRect2D rendering_area, 
@@ -111,4 +113,10 @@ namespace vulkan {
     void execute_image_pipeline_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkImageMemoryBarrier& img_barrier);
 
     void execure_memory_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkMemoryBarrier& memory_barrier);
+
+    VkBufferImageCopy get_buffer_image_copy_region(VkExtent3D extent);
+
+    VkBufferImageCopy get_buffer_image_copy_region(VkExtent3D extent, VkImageSubresourceLayers subresource);
+    
+    void execute_image_copy(VkCommandBuffer& cmd_buffer, VkBuffer& staging_buffer, VkImage& image, VkBufferImageCopy copy_region);
 }

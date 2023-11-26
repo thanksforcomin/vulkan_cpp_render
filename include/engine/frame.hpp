@@ -33,20 +33,4 @@ namespace engine {
             void wait_for_fence();
             void reset_command_buffer();
     };
-
-    class UploadContext {
-        VulkanContext *context;
-    
-    public:
-        UploadContext() = delete;
-        UploadContext(VulkanContext *vulkan_context);
-        ~UploadContext();
-
-        void immediate_submit(std::function<void(VkCommandBuffer& cmd)>&& function);
-
-    private:
-        VkFence fence;
-        CommandPool cmd_pool;
-        CommandBuffer cmd_buffer;
-    };
 }

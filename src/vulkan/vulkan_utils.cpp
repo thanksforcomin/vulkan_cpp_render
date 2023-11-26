@@ -419,6 +419,10 @@ namespace vulkan {
         return image;
     }
 
+    void deallocate_buffer(allocated_buffer &&buffer) {
+        vmaDestroyBuffer(*buffer.allocator, buffer.buffer, buffer.allocation);
+    }
+
     void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size) {
         void* ptr;
         vmaMapMemory(*buffer.allocator, buffer.allocation, &ptr);
@@ -523,5 +527,36 @@ namespace vulkan {
 
     void execure_memory_barrier(VkCommandBuffer& cmd_buffer, VkPipelineStageFlags src_stage_mask, VkPipelineStageFlags dst_stage_mask, VkMemoryBarrier& memory_barrier) {
         vkCmdPipelineBarrier(cmd_buffer, src_stage_mask, dst_stage_mask, 0, 1, &memory_barrier, 0, nullptr, 0, nullptr);
-    }    
+    }
+
+    VkBufferImageCopy get_buffer_image_copy_region(VkExtent3D extent) {
+        return VkBufferImageCopy {
+            .bufferOffset = 0,
+            .bufferRowLength = 0,
+            .bufferImageHeight = 0,
+            .imageSubresource = {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .mipLevel = 0,
+                .baseArrayLayer = 0,
+                .layerCount = 1
+            },
+            .imageOffset = {0, 0, 0},
+            .imageExtent = extent
+        };
+    }
+
+    VkBufferImageCopy get_buffer_image_copy_region(VkExtent3D extent, VkImageSubresourceLayers subresource) {
+        return VkBufferImageCopy {
+            .bufferOffset = 0,
+            .bufferRowLength = 0,
+            .bufferImageHeight = 0,
+            .imageSubresource = subresource,
+            .imageOffset = {0, 0, 0},
+            .imageExtent = extent
+        };
+    }
+
+    void execute_image_copy(VkCommandBuffer& cmd_buffer, VkBuffer& staging_buffer, VkImage& image, VkBufferImageCopy copy_region) {
+        vkCmdCopyBufferToImage(cmd_buffer, staging_buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
+    }
 }
