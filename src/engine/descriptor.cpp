@@ -33,6 +33,18 @@ namespace engine {
         bindings.push_back(vulkan::get_descriptor_set_layout_binding(type, shader_stage, binding_point));
     }
 
+    void DescriptorSetLayout::push_uniform_buffer_layout_binding(uint32_t binding_point = 0, VkShaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT) {
+        bindings.push_back(vulkan::get_descriptor_set_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, binding_point));
+    }
+
+    void DescriptorSetLayout::push_storage_buffer_layout_binding(uint32_t binding_point = 0, VkShaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT) {
+        bindings.push_back(vulkan::get_descriptor_set_layout_binding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, binding_point));
+    }
+
+    void DescriptorSetLayout::push_image_sampler_layout_binding(uint32_t binding_point = 0, VkShaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT) {
+        bindings.push_back(vulkan::get_descriptor_set_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, binding_point));
+    }
+
     void DescriptorSetLayout::create_layout() {
         layout = vulkan::create_descriptor_set_layout(context->device.logical, bindings);
     }
