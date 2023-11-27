@@ -13,6 +13,8 @@
 #include "include/engine/renderpass.hpp"
 #include "include/engine/descriptor.hpp"
 #include "include/engine/fwdplus.hpp"
+#include "include/engine/dynamic_rendering.hpp"
+#include "include/engine/image.hpp"
 
 #include "include/vulkan/pipeline.hpp"
 #include "include/vulkan/vertex.hpp"
@@ -47,6 +49,9 @@ int main() {
     engine::RenderPass depth_render_pass(&context);
     //main_render_pass.init_default();
     //context.swap_chain.create_framebuffers(main_render_pass);
+
+    engine::DynamicRenderPass depth_prepass(&context);
+    engine::DynamicRenderPass main_pass(&context);
 
     engine::DescriptorPool pool(&context);
     pool.push(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 100);

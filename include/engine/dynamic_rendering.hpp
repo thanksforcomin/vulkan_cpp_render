@@ -16,6 +16,9 @@ namespace engine {
             DynamicRenderPass(VulkanContext *vulkan_context);
             ~DynamicRenderPass();
 
+            void begin(VkCommandBuffer& cmd_buffer);
+            void end(VkCommandBuffer& cmd_buffer);
+
             VkRenderingInfo rendering_info;
 
             void set_color_attachment(Attachment& attachment);

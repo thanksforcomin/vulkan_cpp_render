@@ -53,6 +53,10 @@ namespace engine {
         return swap_chain_framebuffers[index];
     }
 
+    VkImageView& SwapChain::query_image_view(uint32_t index) {
+        return swap_chain_image_views[index];
+    }
+
     uint32_t SwapChain::query_next_image(VkSemaphore &semop) {
         uint32_t img_index;
         if(vkAcquireNextImageKHR(vulkan_context->device.logical, swap_chain, 1000000000, semop, nullptr, &img_index) != VK_SUCCESS)

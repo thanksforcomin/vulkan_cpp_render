@@ -23,6 +23,7 @@ namespace engine {
             VkSwapchainKHR swap_chain;
 
             VkFramebuffer &query_framebuffer(uint32_t index);
+            VkImageView &query_image_view(uint32_t index);
             void create_framebuffers(RenderPass &render_pass);
             uint32_t query_next_image(VkSemaphore &semop);
 
