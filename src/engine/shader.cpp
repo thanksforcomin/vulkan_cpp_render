@@ -2,6 +2,8 @@
 #include "include/engine/vulkan_context.hpp"
 #include "include/vulkan/pipeline.hpp"
 
+#include "include/utils/utils.hpp"
+
 #include <fstream>
 #include <stdexcept>
 #include <filesystem>

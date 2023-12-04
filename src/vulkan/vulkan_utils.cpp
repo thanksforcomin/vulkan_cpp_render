@@ -234,7 +234,7 @@ namespace vulkan {
             .binding = binding_point,
             .descriptorCount = 1,
             .descriptorType = type,
-            .stageFlags = (VkShaderStageFlags)shader_stage,
+            .stageFlags = shader_stage,
             .pImmutableSamplers = nullptr
         };
     };
@@ -259,13 +259,25 @@ namespace vulkan {
 
     pipeline::pipeline_builder begin_pipeline_builder(VkPipelineLayout &layout, uint32_t subpass) {
         pipeline::pipeline_builder builder;
-        builder.create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        /*builder.create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        builder.create_info.pNext = {};
         builder.create_info.basePipelineHandle = VK_NULL_HANDLE;
         builder.create_info.basePipelineIndex = -1;
         builder.create_info.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
         builder.create_info.renderPass = nullptr;
         builder.create_info.subpass = subpass;
-        builder.create_info.layout = layout;
+        builder.create_info.layout = layout;*/
+
+        builder.create_info = {
+            .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+            .pNext = nullptr,
+            .basePipelineHandle = VK_NULL_HANDLE,
+            .basePipelineIndex = -1,
+            .flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT,
+            .renderPass = nullptr,
+            .subpass = subpass,
+            .layout = layout
+        };
         return builder;
     };
 

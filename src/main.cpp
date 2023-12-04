@@ -46,9 +46,9 @@ int main() {
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
     frames.push_back(std::move(std::unique_ptr<engine::Frame>(new engine::Frame(&context))));
 
-    engine::RenderPass depth_render_pass(&context);
-    //main_render_pass.init_default();
-    //context.swap_chain.create_framebuffers(main_render_pass);
+    engine::RenderPass main_render_pass(&context);
+    main_render_pass.init_default();
+    context.swap_chain.create_framebuffers(main_render_pass);
 
     engine::DynamicRenderPass depth_prepass(&context);
     engine::DynamicRenderPass main_pass(&context);
@@ -60,34 +60,47 @@ int main() {
     pool.push(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3);
     pool.init();
 
-    engine::DescriptorSetLayout global_set(&context);
-    global_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT); //camera data
-    global_set.create_layout();
+    engine::DescriptorSetLayout transform_set(&context);
+    transform_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT); //instance data
+    transform_set.create_layout();
 
-    engine::DescriptorSetLayout object_set(&context);
-    object_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT); //position data
-    object_set.create_layout();
+    engine::DescriptorSetLayout camera_set(&context);
+    camera_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //camera data
+    camera_set.create_layout();
 
     engine::DescriptorSetLayout light_culling_set(&context);
-    light_culling_set.push_layout_binding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-    light_culling_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+    light_culling_set.push_layout_binding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //light culling results
+    light_culling_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //for point lights
     light_culling_set.create_layout();
 
     engine::DescriptorSetLayout intermediate_set(&context);
-    intermediate_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+    intermediate_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //that depth attachment
     intermediate_set.create_layout();
 
     engine::DescriptorSetLayout material_set(&context);
-    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
-    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
-    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
+    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT); //material properties
+    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT); //albedo map
+    material_set.push_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, VK_SHADER_STAGE_FRAGMENT_BIT); //normal map
     material_set.create_layout();
 
-    //engine::Shader vertex_shader(&context, "../res/basic_shader/shader.vert", VK_SHADER_STAGE_VERTEX_BIT);
-    //engine::Shader fragment_shader(&context, "../res/basic_shader/shader.frag", VK_SHADER_STAGE_FRAGMENT_BIT);
+    engine::Shader vertex_shader(&context, "../res/light_culling/vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+    engine::Shader fragment_shader(&context, "../res/light_culling/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 
-    VkPipelineLayout layout(vulkan::create_pipeline_layout(context.device.logical, {global_set.layout, object_set.layout}));
-    //VkPipeline graphics_pipeline(fwd_plus::create_classic_pipeline(&context, ));
+    VkPipelineLayout main_layout(
+        vulkan::create_pipeline_layout(context.device.logical, 
+            {
+                transform_set.layout,
+                camera_set.layout,
+                light_culling_set.layout, 
+                intermediate_set.layout, 
+                material_set.layout
+            }
+        )
+    );
+    VkPipeline graphics_pipeline(fwd_plus::create_classic_pipeline(context, main_layout, vertex_shader, fragment_shader));
+    VkPipeline depth_pipeline(fwd_plus::create_depth_pipeline(context, main_layout, vertex_shader));
+
+    std::cout << "hello\n";
     
     //main loop
     while(!glfwWindowShouldClose(context.game_window)) {

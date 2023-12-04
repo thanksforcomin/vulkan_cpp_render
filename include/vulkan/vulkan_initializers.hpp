@@ -36,7 +36,7 @@ namespace vulkan {
 
     VkCommandBuffer allocate_command_buffer(VkDevice &dev, VkCommandPool &command_pool, VkCommandBufferLevel level, uint32_t count = 1);
 
-    VkDescriptorSetLayout create_descriptor_set_layout(VkDevice &dev, std::vector<VkDescriptorSetLayoutBinding> bindings);
+    VkDescriptorSetLayout create_descriptor_set_layout(VkDevice &dev, std::vector<VkDescriptorSetLayoutBinding> &bindings);
 
     VkDescriptorSet allocate_descriptor_set(VkDevice &dev, VkDescriptorPool &pool, VkDescriptorSetLayout &layout);
 
@@ -53,5 +53,5 @@ namespace vulkan {
 
     VkPipeline create_compute_pipeline(VkDevice &dev, VkPipelineLayout &pipeline_layout, VkPipelineShaderStageCreateInfo &compute_shader);
 
-    VkShaderModule create_chader_module(VkDevice &dev, std::string&& data);
+    VkShaderModule create_chader_module(VkDevice &dev, std::vector<char>&& data);
 }

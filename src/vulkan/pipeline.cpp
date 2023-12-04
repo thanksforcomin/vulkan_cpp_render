@@ -2,54 +2,64 @@
 
 namespace vulkan {
     namespace pipeline {
-        pipeline_builder& pipeline_builder::vertex_assembly(VkPipelineVertexInputStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::vertex_assembly(VkPipelineVertexInputStateCreateInfo&& info) {
             _vertex_assembly = info;
             create_info.pVertexInputState = &_vertex_assembly;
+            return *this;
         }
 
-        pipeline_builder& pipeline_builder::input_assembly(VkPipelineInputAssemblyStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::input_assembly(VkPipelineInputAssemblyStateCreateInfo&& info) {
             _input_assembly = info;
             create_info.pInputAssemblyState = &_input_assembly;
+            return *this;
         }
 
-        pipeline_builder& pipeline_builder::tesselation(VkPipelineTessellationStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::tesselation(VkPipelineTessellationStateCreateInfo&& info) {
             _tesselation = info;
             create_info.pTessellationState = &_tesselation;
+            return *this;
         }
 
-        pipeline_builder& pipeline_builder::viewport(VkPipelineViewportStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::viewport(VkPipelineViewportStateCreateInfo&& info) {
             _viewport = info;
             create_info.pViewportState = &_viewport;
+            return *this;
         }    
 
-        pipeline_builder& pipeline_builder::rasterization(VkPipelineRasterizationStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::rasterization(VkPipelineRasterizationStateCreateInfo&& info) {
             _rasterization = info;
             create_info.pRasterizationState = &_rasterization;
+            return *this;
         }
 
-        pipeline_builder& pipeline_builder::multisampling(VkPipelineMultisampleStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::multisampling(VkPipelineMultisampleStateCreateInfo&& info) {
             _multisampling = info;
             create_info.pMultisampleState = &_multisampling;
+            return *this;
         }
 
-        pipeline_builder& pipeline_builder::depth_stencil(VkPipelineDepthStencilStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::depth_stencil(VkPipelineDepthStencilStateCreateInfo&& info) {
             _depth_stencil = info;
             create_info.pDepthStencilState = &_depth_stencil;
+            return *this;
         } 
 
-        pipeline_builder& pipeline_builder::color_blend(VkPipelineColorBlendStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::color_blend(VkPipelineColorBlendStateCreateInfo&& info) {
             _color_blend = info;
             create_info.pColorBlendState = &_color_blend;
+            return *this;
         }
 
-        pipeline_builder& pipeline_builder::dynamic_state(VkPipelineDynamicStateCreateInfo info) {
+        pipeline_builder& pipeline_builder::dynamic_state(VkPipelineDynamicStateCreateInfo&& info) {
             create_info.pDynamicState = new VkPipelineDynamicStateCreateInfo(info);
+            return *this;
         }
 
         pipeline_builder& pipeline_builder::shader_stages(std::vector<VkPipelineShaderStageCreateInfo> stages) {
             _shader_stages = stages;
             create_info.stageCount = _shader_stages.size();
             create_info.pStages = _shader_stages.data();
+            return *this;
         }
 
 

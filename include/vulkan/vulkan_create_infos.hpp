@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <iostream>
 
 namespace vulkan {
     inline VkInstanceCreateInfo instance_create_info(VkApplicationInfo *app, 
@@ -169,8 +170,8 @@ namespace vulkan {
         return VkDescriptorSetLayoutCreateInfo {
             .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
             .pNext = nullptr,
-            .bindingCount = binding_count,
-            .pBindings = binding
+            .pBindings = binding,
+            .bindingCount = binding_count
         };
     };
 

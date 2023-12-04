@@ -46,7 +46,7 @@ namespace vulkan {
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName = "minivan";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_API_VERSION_1_0;
+        appInfo.apiVersion = VK_API_VERSION_1_3;
 
         std::cout << "minivan" << " "
                 << " 1, 0, 0 \n";
@@ -167,7 +167,7 @@ namespace vulkan {
     }
 
     VkFramebuffer create_framebuffer(VkDevice &dev, VkRenderPass &render_pass, VkImageView *image_attachment, VkExtent2D extent, uint32_t attachment_count) {
-        VkFramebufferCreateInfo create_info{framebuffer_create_info(image_attachment, render_pass, extent.width, extent.height, 2)};
+        VkFramebufferCreateInfo create_info{framebuffer_create_info(image_attachment, render_pass, extent.width, extent.height, attachment_count)};
         VkFramebuffer framebuffer;
         if (vkCreateFramebuffer(dev, &create_info, nullptr, &framebuffer) != VK_SUCCESS)
             throw std::runtime_error("failed to create framebuffer\n");
@@ -193,8 +193,8 @@ namespace vulkan {
         return command_buffer;
     }
 
-    VkDescriptorSetLayout create_descriptor_set_layout(VkDevice &dev, std::vector<VkDescriptorSetLayoutBinding> bindings) {
-        VkDescriptorSetLayoutCreateInfo create_info{descriptor_set_layout_create_info(&bindings[0], bindings.size())};
+    VkDescriptorSetLayout create_descriptor_set_layout(VkDevice &dev, std::vector<VkDescriptorSetLayoutBinding> &bindings) {
+        VkDescriptorSetLayoutCreateInfo create_info{descriptor_set_layout_create_info(bindings.data(), bindings.size())};
         VkDescriptorSetLayout layout;
         if (vkCreateDescriptorSetLayout(dev, &create_info, nullptr, &layout) != VK_SUCCESS)
             throw std::runtime_error("failed to create descriptor set layout\n");
@@ -261,7 +261,7 @@ namespace vulkan {
         return pipeline;
     }
 
-    VkShaderModule create_chader_module(VkDevice &dev, std::string&& data) {
+    VkShaderModule create_chader_module(VkDevice &dev, std::vector<char>&& data) {
         VkShaderModuleCreateInfo create_info{shader_module_create_info(data.size(), &data[0])};
         VkShaderModule shader_module;
         if (vkCreateShaderModule(dev, &create_info, nullptr, &shader_module) != VK_SUCCESS)

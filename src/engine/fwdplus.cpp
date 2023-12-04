@@ -3,8 +3,8 @@
 namespace fwd_plus {
     VkPipeline create_classic_pipeline(engine::VulkanContext &context,
                                        VkPipelineLayout &pipeline_layout, 
-                                       VkPipelineShaderStageCreateInfo &vertex_shader, 
-                                       VkPipelineShaderStageCreateInfo &fragment_shader) 
+                                       engine::Shader &vertex_shader, 
+                                       engine::Shader &fragment_shader) 
     {
         VkPipelineColorBlendAttachmentState color_blend_attachment(vulkan::pipeline::color_blend_attachment());
         VkViewport viewport(vulkan::get_viewport(context.swap_chain.swap_chain_extent));
@@ -17,8 +17,8 @@ namespace fwd_plus {
             VK_DYNAMIC_STATE_SCISSOR 
         };
         std::vector<VkPipelineShaderStageCreateInfo> shaders {
-            vertex_shader,
-            fragment_shader
+            vertex_shader.stage_create_info,
+            fragment_shader.stage_create_info
         };
 
         //TODO: multiple subpass something something
@@ -37,7 +37,7 @@ namespace fwd_plus {
 
     VkPipeline create_depth_pipeline(engine::VulkanContext &context, 
                                      VkPipelineLayout pipeline_layout,
-                                     VkPipelineShaderStageCreateInfo &vertex_shader)
+                                     engine::Shader &vertex_shader)
     {
         VkViewport viewport(vulkan::get_viewport(context.swap_chain.swap_chain_extent));
         VkRect2D scissors{
@@ -61,7 +61,7 @@ namespace fwd_plus {
                 .stencilTestEnable = VK_FALSE
             }
         )
-        .shader_stages({vertex_shader})
+        .shader_stages({vertex_shader.stage_create_info})
         .init(context.device.logical);
     }
 }
