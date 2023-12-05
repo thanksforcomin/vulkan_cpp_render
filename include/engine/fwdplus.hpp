@@ -7,6 +7,12 @@
 #include "include/engine/shader.hpp"
 
 namespace fwd_plus {
+    struct push_constant_object {
+        glm::ivec2 viewport_size;
+        glm::ivec2 tile_nums;
+        int debugview_index;
+    };
+
     VkPipeline create_classic_pipeline(engine::VulkanContext &context,
                                        VkPipelineLayout &pipeline_layout, 
                                        engine::Shader &vertex_shader, 

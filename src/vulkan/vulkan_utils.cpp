@@ -257,7 +257,7 @@ namespace vulkan {
         };
     };
 
-    pipeline::pipeline_builder begin_pipeline_builder(VkPipelineLayout &layout, uint32_t subpass) {
+    pipeline::pipeline_builder begin_pipeline_builder(VkPipelineLayout &layout, uint32_t subpass, std::vector<VkPushConstantRange> push_constants) {
         pipeline::pipeline_builder builder;
         /*builder.create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         builder.create_info.pNext = {};
@@ -570,5 +570,13 @@ namespace vulkan {
 
     void execute_image_copy(VkCommandBuffer& cmd_buffer, VkBuffer& staging_buffer, VkImage& image, VkBufferImageCopy copy_region) {
         vkCmdCopyBufferToImage(cmd_buffer, staging_buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
+    }
+
+    VkPushConstantRange get_push_constant_range(uint32_t size, VkShaderStageFlags stage_flags, uint32_t offset) {
+        return VkPushConstantRange {
+            .stageFlags = stage_flags,
+            .offset = offset,
+            .size = size
+        };
     }
 }

@@ -60,6 +60,8 @@ int main() {
     pool.push(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3);
     pool.init();
 
+    VkPushConstantRange push_constant{vulkan::get_push_constant_range(sizeof(fwd_plus::push_constant_object), VK_SHADER_STAGE_FRAGMENT_BIT)};
+
     engine::DescriptorSetLayout transform_set(&context);
     transform_set.push_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT); //instance data
     transform_set.create_layout();
@@ -85,6 +87,7 @@ int main() {
 
     engine::Shader vertex_shader(&context, "../res/light_culling/vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
     engine::Shader fragment_shader(&context, "../res/light_culling/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+    engine::Shader depth_shader(&context, "../res/light_culling/depth.spv", VK_SHADER_STAGE_VERTEX_BIT);
 
     VkPipelineLayout main_layout(
         vulkan::create_pipeline_layout(context.device.logical, 
@@ -94,11 +97,28 @@ int main() {
                 light_culling_set.layout, 
                 intermediate_set.layout, 
                 material_set.layout
+            }, 
+            {
+                push_constant
             }
         )
     );
-    VkPipeline graphics_pipeline(fwd_plus::create_classic_pipeline(context, main_layout, vertex_shader, fragment_shader));
-    VkPipeline depth_pipeline(fwd_plus::create_depth_pipeline(context, main_layout, vertex_shader));
+
+    VkPipeline graphics_pipeline(
+        fwd_plus::create_classic_pipeline(
+            context, 
+            main_layout, 
+            vertex_shader, 
+            fragment_shader
+        )
+    );
+    VkPipeline depth_pipeline(
+        fwd_plus::create_depth_pipeline(
+            context, 
+            main_layout, 
+            depth_shader
+        )
+    );
 
     std::cout << "hello\n";
     

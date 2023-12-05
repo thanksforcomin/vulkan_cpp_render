@@ -62,12 +62,12 @@ namespace vulkan {
             return *this;
         }
 
-
         VkPipeline pipeline_builder::init(VkDevice &dev) {
             VkPipeline data;
             if(vkCreateGraphicsPipelines(dev, VK_NULL_HANDLE, 1, &create_info, nullptr, &data) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create graphics pipeline!");
             }
+            return data;
         };
 
         // pipeline stages create info

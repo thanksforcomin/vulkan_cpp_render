@@ -44,7 +44,7 @@ namespace vulkan {
 
     VkWriteDescriptorSet get_descriptor_write_info(VkDescriptorType type, VkDescriptorSet dst_set, uint32_t binding, VkDescriptorBufferInfo &buffer_info);
 
-    pipeline::pipeline_builder begin_pipeline_builder(VkPipelineLayout &layout, uint32_t subpass = 0);
+    pipeline::pipeline_builder begin_pipeline_builder(VkPipelineLayout &layout, uint32_t subpass = 0, std::vector<VkPushConstantRange> push_constants = {});
 
     VkAttachmentDescription get_color_attachment(VkFormat &format, VkImageLayout fin_layout, VkImageLayout init_layout = VK_IMAGE_LAYOUT_UNDEFINED);
 
@@ -119,4 +119,6 @@ namespace vulkan {
     VkBufferImageCopy get_buffer_image_copy_region(VkExtent3D extent, VkImageSubresourceLayers subresource);
     
     void execute_image_copy(VkCommandBuffer& cmd_buffer, VkBuffer& staging_buffer, VkImage& image, VkBufferImageCopy copy_region);
+
+    VkPushConstantRange get_push_constant_range(uint32_t size, VkShaderStageFlags stage_flags, uint32_t offset = 0);
 }
