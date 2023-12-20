@@ -13,6 +13,7 @@ namespace engine {
             static int next_id;
 
         public:
+            DynamicRenderPass() = delete;
             DynamicRenderPass(VulkanContext *vulkan_context);
             ~DynamicRenderPass();
 

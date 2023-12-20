@@ -17,6 +17,7 @@ namespace engine {
 
             VulkanContext *vulkan_context; //context to which swap chain related to
 
+            SwapChain() = delete;
             SwapChain(VulkanContext *context);
             ~SwapChain();
 

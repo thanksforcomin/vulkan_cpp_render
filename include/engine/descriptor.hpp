@@ -17,6 +17,7 @@ namespace engine {
             std::vector<VkDescriptorPoolSize> pool_sizes;
         
         public:
+            DescriptorPool() = delete;
             DescriptorPool(VulkanContext *vulkan_context);
             ~DescriptorPool();
 
@@ -31,6 +32,7 @@ namespace engine {
         VulkanContext *context;
 
     public:
+        DescriptorSetLayout() = delete;
         DescriptorSetLayout(VulkanContext *vulkan_context);
         ~DescriptorSetLayout();
 
@@ -52,6 +54,7 @@ namespace engine {
         VkDescriptorSetLayout *layout;
 
     public:
+        DescriptorSet() = delete;
         DescriptorSet(VulkanContext *vulkan_context, VkDescriptorSetLayout *desc_layout, VkDescriptorPool *desc_pool);
         ~DescriptorSet();
 

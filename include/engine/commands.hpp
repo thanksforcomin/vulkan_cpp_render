@@ -16,6 +16,7 @@ namespace engine {
             VkCommandPool *pool;
 
         public:
+            CommandBuffer() = delete;
             CommandBuffer(VulkanContext *vulkan_context, VkCommandPool command_pool, VkCommandBufferLevel lvl = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
             CommandBuffer(CommandBuffer const &buff) = default;
             CommandBuffer(CommandBuffer &&buff);

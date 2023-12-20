@@ -81,7 +81,7 @@ namespace vulkan {
 
     void deallocate_buffer(allocated_buffer &&buffer);
 
-    void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size);
+    void upload_to_buffer(allocated_buffer &buffer, void* data, uint32_t size);
 
     VkRenderingInfoKHR get_rendering_info(VkRect2D rendering_area, 
                                           VkRenderingAttachmentInfoKHR *color_attachment, 

@@ -21,7 +21,7 @@ namespace engine {
     }
 
     void VertexBuffer::upload(std::vector<vulkan::vertex::Vertex> *data) {
-        upload_to_buffer(buffer, data->data(), data->size());
+        upload_to_buffer(buffer, data->data(), data->size() * sizeof(vulkan::vertex::Vertex));
     }    
 
     void VertexBuffer::bind(VkCommandBuffer &command_buffer, uint32_t binding, uint32_t count) {
@@ -29,7 +29,54 @@ namespace engine {
     }
 }
 
-//UNIFORM BUFFER
+//INDEX_BUFFER
 namespace engine {
+    IndexBuffer::IndexBuffer(VulkanContext *vulkan_context, std::vector<uint32_t> *data) :
+        context(vulkan_context),
+        buffer(
+            vulkan::allocate_buffer(
+                context->allocator, 
+                sizeof(uint32_t) * data->size(), 
+                VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
+                VMA_MEMORY_USAGE_CPU_TO_GPU
+            )
+        )
+    {
+        upload(data);
+    }
 
+    IndexBuffer::~IndexBuffer() {
+        vmaDestroyBuffer(context->allocator, buffer.buffer, buffer.allocation);
+    }
+
+    void IndexBuffer::upload(std::vector<uint32_t> *data) {
+        upload_to_buffer(buffer, data->data(), data->size() * sizeof(uint32_t));
+    }
+
+    void IndexBuffer::bind(VkCommandBuffer &command_buffer, uint32_t binding, uint32_t count) {
+        vkCmdBindIndexBuffer(command_buffer, buffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+    }
+}
+
+//GENERAL BUFFER
+namespace engine {
+    Buffer::Buffer(VulkanContext* vulkan_context, size_t size, VkBufferUsageFlags usage_flags, VmaMemoryUsage memory_usage) :
+        context(vulkan_context),
+        buffer(
+            vulkan::allocate_buffer(
+                context->allocator, 
+                size, 
+                usage_flags, 
+                memory_usage
+            )
+        )
+    { }
+
+    Buffer::~Buffer() {
+        vmaDestroyBuffer(context->allocator, buffer.buffer, buffer.allocation);
+    }
+
+    void Buffer::upload(void* data, uint32_t size) {
+        upload_to_buffer(buffer, data, size);
+    }
 }

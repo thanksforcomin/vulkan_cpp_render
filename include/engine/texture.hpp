@@ -13,6 +13,7 @@ namespace engine {
             VulkanContext *context;
 
         public:
+            Texture() = delete;
             Texture(VulkanContext *vulkan_context);
             Texture(VulkanContext *vulkan_context, VkImageCreateInfo &img_create_info, VkImageViewCreateInfo &img_view_create_info);
             ~Texture();

@@ -435,7 +435,7 @@ namespace vulkan {
         vmaDestroyBuffer(*buffer.allocator, buffer.buffer, buffer.allocation);
     }
 
-    void upload_to_buffer(allocated_buffer &buffer, vertex::Vertex* data, uint32_t size) {
+    void upload_to_buffer(allocated_buffer &buffer, void* data, uint32_t size) {
         void* ptr;
         vmaMapMemory(*buffer.allocator, buffer.allocation, &ptr);
         memcpy(ptr, data, size);

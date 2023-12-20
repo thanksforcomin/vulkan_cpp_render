@@ -25,6 +25,7 @@ namespace engine {
             CommandPool command_pool;
             CommandBuffer command_buffer;
 
+            Frame() = delete;
             Frame(VulkanContext *vulkan_context);
             Frame(const Frame &fr);
             Frame(Frame &&fr);

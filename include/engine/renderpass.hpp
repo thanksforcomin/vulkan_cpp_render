@@ -11,6 +11,7 @@ namespace engine {
         private:
             VulkanContext *context;
         public:
+            RenderPass() = delete;
             RenderPass(VulkanContext *vulkan_context);
             ~RenderPass();
 

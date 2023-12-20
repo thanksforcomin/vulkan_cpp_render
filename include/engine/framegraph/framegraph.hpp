@@ -14,7 +14,7 @@ namespace engine {
         FrameGraph(VulkanContext *vulkan_context);
         ~FrameGraph();
 
-        Buffer& create_buffer();
+        //Buffer& create_buffer();
         Image& create_image();
         DynamicRenderPass& create_render_pass();
 

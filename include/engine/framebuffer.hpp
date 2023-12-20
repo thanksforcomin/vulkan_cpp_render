@@ -9,6 +9,7 @@ namespace engine {
 
     class Framebuffer {
         public:
+            Framebuffer() = delete;
             Framebuffer(const VulkanContext *vulkan_context, 
                         RenderPass &render_pass,
                         VkImageView *image_attachment, 
