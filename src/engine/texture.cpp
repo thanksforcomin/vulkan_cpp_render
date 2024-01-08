@@ -6,15 +6,15 @@
 #include <cstring>
 
 namespace engine {
-    Texture::Texture(VulkanContext *vulkan_context) {
+    Image::Image(VulkanContext *vulkan_context) {
         //create_image(defaults::_get_image_create_info())
     }
 
-    Texture::Texture(VulkanContext *vulkan_context, VkImageCreateInfo &img_create_info, VkImageViewCreateInfo &img_view_create_info) {
+    Image::Image(VulkanContext *vulkan_context, VkImageCreateInfo &img_create_info, VkImageViewCreateInfo &img_view_create_info) {
 
     }
 
-    void Texture::load_from_file(std::string filepath) {
+    void Image::load_from_file(std::string filepath) {
         /*int width;
         int height;
         int channels;

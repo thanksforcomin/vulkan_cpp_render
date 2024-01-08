@@ -7,6 +7,7 @@
 #include <limits>
 #include <algorithm>
 #include <iostream>
+#include <vulkan/vulkan_core.h>
 
 namespace vulkan {
     /**
@@ -198,6 +199,37 @@ namespace vulkan {
             .width = extent.width,
             .height = extent.height,
             .depth = 1
+        };
+    }
+
+    VkExtent2D extent_3d_to_2d(VkExtent3D extent) {
+        return VkExtent2D {
+            .width = extent.width,
+            .height = extent.height
+        };
+    }
+
+    VkImageBlit2 get_blit_region(VkExtent2D src_extent, VkExtent2D dst_extent, VkImageAspectFlags aspect_mask) {
+        return VkImageBlit2 {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_BLIT_2,
+            .pNext = nullptr,
+            .srcOffsets[1] = {(int)src_extent.width, (int)src_extent.height, 1},  
+            .dstOffsets[1] = {(int)dst_extent.width, (int)dst_extent.height, 1},
+            .srcSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1},
+        };
+    }
+
+    VkBlitImageInfo2 get_blit_info(VkImageBlit2& blit_region, VkImage& src, VkImage& dst, VkFilter filter) {
+        return VkBlitImageInfo2 {
+            .sType = VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2,
+            .pNext = nullptr,
+            .srcImage = src,
+            .dstImage = dst,
+            .srcImageLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            .dstImageLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            .regionCount = 1,
+            .pRegions = &blit_region,
+            .filter = filter
         };
     }
 
@@ -397,51 +429,58 @@ namespace vulkan {
         if(vkQueuePresentKHR(queue, &present_info) != VK_SUCCESS)
             throw std::runtime_error("failed to present frame");
     }
+    namespace memory {
+        allocated_buffer allocate_buffer(VmaAllocator &allocator, size_t size, VkBufferUsageFlags flags, VmaMemoryUsage usage) {
+            allocated_buffer buffer {
+                .size = size,
+                .allocator = &allocator
+            };
 
-    allocated_buffer allocate_buffer(VmaAllocator &allocator, size_t size, VkBufferUsageFlags flags, VmaMemoryUsage usage) {
-        allocated_buffer buffer {
-            .size = size,
-            .allocator = &allocator
+            VkBufferCreateInfo create_info{};
+            create_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+            create_info.pNext = nullptr;
+            create_info.size = size;
+            create_info.usage = flags;
+
+            VmaAllocationCreateInfo allocation_info{};
+            allocation_info.usage = usage;
+
+            vmaCreateBuffer(allocator, &create_info, &allocation_info, &buffer.buffer, &buffer.allocation, nullptr);
+            return buffer;
+        }
+
+        allocated_image allocate_image(VmaAllocator &allocator, VkExtent3D extent, VkFormat format, VkImageUsageFlags flags, VmaMemoryUsage usage) {
+            allocated_image image {
+                .allocator = &allocator
+            };
+
+            VkImageCreateInfo create_info{image_create_info(format, flags, extent)};
+            VmaAllocationCreateInfo allocation_info{
+                .usage = usage
+            };
+
+            vmaCreateImage(allocator, &create_info, &allocation_info, &image.image, &image.allocation, nullptr);
+            return image;
+        }
+
+        void copy_image_to_image(VkCommandBuffer &cmd, allocated_image &src, allocated_image &dst) {
+            VkImageBlit2 blit_region{get_blit_region(extent_3d_to_2d(src.extent), extent_3d_to_2d(dst.extent))};
+            VkBlitImageInfo2 blit_info{get_blit_info(blit_region, src.image, dst.image)};
+
+            vkCmdBlitImage2(cmd, &blit_info);
         };
 
-        VkBufferCreateInfo create_info{};
-        create_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        create_info.pNext = nullptr;
-        create_info.size = size;
-        create_info.usage = flags;
+        void deallocate_buffer(allocated_buffer &&buffer) {
+            vmaDestroyBuffer(*buffer.allocator, buffer.buffer, buffer.allocation);
+        }
 
-        VmaAllocationCreateInfo allocation_info{};
-        allocation_info.usage = usage;
-
-        vmaCreateBuffer(allocator, &create_info, &allocation_info, &buffer.buffer, &buffer.allocation, nullptr);
-        return buffer;
+        void upload_to_buffer(allocated_buffer &buffer, void* data, uint32_t size) {
+            void* ptr;
+            vmaMapMemory(*buffer.allocator, buffer.allocation, &ptr);
+            memcpy(ptr, data, size);
+            vmaUnmapMemory(*buffer.allocator, buffer.allocation);
+        }
     }
-
-    allocated_image allocate_image(VmaAllocator &allocator, VkExtent3D extent, VkFormat format, VkImageUsageFlags flags, VmaMemoryUsage usage) {
-        allocated_image image {
-            .allocator = &allocator
-        };
-
-        VkImageCreateInfo create_info{image_create_info(format, flags, extent)};
-        VmaAllocationCreateInfo allocation_info{
-            .usage = usage
-        };
-
-        vmaCreateImage(allocator, &create_info, &allocation_info, &image.image, &image.allocation, nullptr);
-        return image;
-    }
-
-    void deallocate_buffer(allocated_buffer &&buffer) {
-        vmaDestroyBuffer(*buffer.allocator, buffer.buffer, buffer.allocation);
-    }
-
-    void upload_to_buffer(allocated_buffer &buffer, void* data, uint32_t size) {
-        void* ptr;
-        vmaMapMemory(*buffer.allocator, buffer.allocation, &ptr);
-        memcpy(ptr, data, size);
-        vmaUnmapMemory(*buffer.allocator, buffer.allocation);
-    }
-
     VkRenderingInfoKHR get_rendering_info(VkRect2D rendering_area, 
                                           VkRenderingAttachmentInfoKHR *color_attachment, 
                                           VkRenderingAttachmentInfoKHR *depth_attachment, 

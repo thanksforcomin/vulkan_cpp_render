@@ -35,7 +35,8 @@ int main() {
                                                VK_KHR_MULTIVIEW_EXTENSION_NAME,
                                                VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME,
                                                VK_KHR_DEPTH_STENCIL_RESOLVE_EXTENSION_NAME,
-                                               VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+                                               VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+                                               VK_KHR_COPY_COMMANDS_2_EXTENSION_NAME};
 
     engine::VulkanContext context(instance_extensions, device_extensions);
 

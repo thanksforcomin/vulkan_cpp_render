@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -31,6 +32,12 @@ namespace vulkan {
     VkFormat find_depth_format(VkPhysicalDevice &dev);
 
     VkExtent3D extent_2d_to_3d(VkExtent2D extent);
+
+    VkExtent2D extent_3d_to_2d(VkExtent3D extent);
+
+    VkImageBlit2 get_blit_region(VkExtent2D src_extent, VkExtent2D dst_extent, VkImageAspectFlags aspect_mask = VK_IMAGE_ASPECT_COLOR_BIT);
+
+    VkBlitImageInfo2 get_blit_info(VkImageBlit2& blit_region, VkImage& src, VkImage& dst, VkFilter filter = VK_FILTER_LINEAR);
 
     std::vector<VkImage> get_swap_chain_images(VkDevice &dev, VkSwapchainKHR &swap_chain);
 
@@ -75,13 +82,21 @@ namespace vulkan {
 
     VkPresentInfoKHR get_present_info(VkSwapchainKHR &swap_chain, uint32_t index);
 
-    allocated_buffer allocate_buffer(VmaAllocator &allocator, VkDeviceSize size, VkBufferUsageFlags flags, VmaMemoryUsage usage);
+    namespace memory {
+        allocated_buffer allocate_buffer(VmaAllocator &allocator, VkDeviceSize size, VkBufferUsageFlags flags, VmaMemoryUsage usage);
 
-    allocated_image allocate_image(VmaAllocator &allocator, VkExtent3D extent, VkFormat format, VkImageUsageFlags flags, VmaMemoryUsage usage);
+        allocated_image allocate_image(VmaAllocator &allocator, VkExtent3D extent, VkFormat format, VkImageUsageFlags flags, VmaMemoryUsage usage);
 
-    void deallocate_buffer(allocated_buffer &&buffer);
+        void copy_image_to_image(VkCommandBuffer &cmd, allocated_image &src, allocated_image &dst);
 
-    void upload_to_buffer(allocated_buffer &buffer, void* data, uint32_t size);
+        void copy_image_to_image(VkCommandBuffer &cmd, VkImage &src, VkImage &dst, VkExtent2D srt_extent, VkExtent2D dst_extent);
+
+        void deallocate_buffer(allocated_buffer &&buffer);
+
+        void deallocate_image(allocated_image &&image);
+
+        void upload_to_buffer(allocated_buffer &buffer, void* data, uint32_t size);
+    }
 
     VkRenderingInfoKHR get_rendering_info(VkRect2D rendering_area, 
                                           VkRenderingAttachmentInfoKHR *color_attachment, 

@@ -5,7 +5,7 @@ namespace engine {
     VertexBuffer::VertexBuffer(VulkanContext *vulkan_context, std::vector<vulkan::vertex::Vertex> *data) :
         context(vulkan_context),
         buffer(
-            vulkan::allocate_buffer(
+            vulkan::memory::allocate_buffer(
                 context->allocator, 
                 sizeof(vulkan::vertex::Vertex) * data->size(), 
                 VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
@@ -21,7 +21,7 @@ namespace engine {
     }
 
     void VertexBuffer::upload(std::vector<vulkan::vertex::Vertex> *data) {
-        upload_to_buffer(buffer, data->data(), data->size() * sizeof(vulkan::vertex::Vertex));
+        vulkan::memory::upload_to_buffer(buffer, data->data(), data->size() * sizeof(vulkan::vertex::Vertex));
     }    
 
     void VertexBuffer::bind(VkCommandBuffer &command_buffer, uint32_t binding, uint32_t count) {
@@ -34,7 +34,7 @@ namespace engine {
     IndexBuffer::IndexBuffer(VulkanContext *vulkan_context, std::vector<uint32_t> *data) :
         context(vulkan_context),
         buffer(
-            vulkan::allocate_buffer(
+            vulkan::memory::allocate_buffer(
                 context->allocator, 
                 sizeof(uint32_t) * data->size(), 
                 VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
@@ -50,7 +50,7 @@ namespace engine {
     }
 
     void IndexBuffer::upload(std::vector<uint32_t> *data) {
-        upload_to_buffer(buffer, data->data(), data->size() * sizeof(uint32_t));
+        vulkan::memory::upload_to_buffer(buffer, data->data(), data->size() * sizeof(uint32_t));
     }
 
     void IndexBuffer::bind(VkCommandBuffer &command_buffer, uint32_t binding, uint32_t count) {
@@ -63,7 +63,7 @@ namespace engine {
     Buffer::Buffer(VulkanContext* vulkan_context, size_t size, VkBufferUsageFlags usage_flags, VmaMemoryUsage memory_usage) :
         context(vulkan_context),
         buffer(
-            vulkan::allocate_buffer(
+            vulkan::memory::allocate_buffer(
                 context->allocator, 
                 size, 
                 usage_flags, 
@@ -77,6 +77,6 @@ namespace engine {
     }
 
     void Buffer::upload(void* data, uint32_t size) {
-        upload_to_buffer(buffer, data, size);
+        vulkan::memory::upload_to_buffer(buffer, data, size);
     }
 }

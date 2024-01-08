@@ -8,15 +8,15 @@
 namespace engine {
     class VulkanContext; //forward decl
 
-    class Texture {
+    class Image {
         private:
             VulkanContext *context;
 
         public:
-            Texture() = delete;
-            Texture(VulkanContext *vulkan_context);
-            Texture(VulkanContext *vulkan_context, VkImageCreateInfo &img_create_info, VkImageViewCreateInfo &img_view_create_info);
-            ~Texture();
+            Image() = delete;
+            Image(VulkanContext *vulkan_context);
+            Image(VulkanContext *vulkan_context, VkImageCreateInfo &img_create_info, VkImageViewCreateInfo &img_view_create_info);
+            ~Image();
 
             void load_from_file(std::string filepath); 
 

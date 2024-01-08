@@ -21,19 +21,19 @@ file(GLOB_RECURSE HEADERS include/*.h**)
 
 add_executable(test ${SOURCES} ${HEADERS})
 
-if(WIN32)
-    message("windows not really supported yet, stay tuned")
-else()
-    #boost 
-    find_package(Boost REQUIRED COMPONENTS system thread)
-    if(Boost_FOUND)
-        message("boost found")
-        include_directories(PUBLIC ${Boost_INCLUDE_DIRS})
-        target_link_libraries(test ${Boost_LIBRARIES})
-    else()
-        message("no boost???")
-    endif()
-endif()
+#if(WIN32)
+#    message("windows not really supported yet, stay tuned")
+#else()
+#    #boost 
+#    find_package(Boost REQUIRED COMPONENTS system thread)
+#    if(Boost_FOUND)
+#        message("boost found")
+#        include_directories(PUBLIC ${Boost_INCLUDE_DIRS})
+#        target_link_libraries(test ${Boost_LIBRARIES})
+#    else()
+#        message("no boost???")
+#    endif()
+#endif()
 
 #vulkan
 if(WIN32)

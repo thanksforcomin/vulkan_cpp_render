@@ -86,7 +86,7 @@ namespace vulkan {
             }
         }
 
-        std::runtime_error("no device is good enough.");
+        throw std::runtime_error("no device is good enough.");
         return VK_NULL_HANDLE;
     };
         
