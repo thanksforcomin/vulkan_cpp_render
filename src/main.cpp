@@ -1,3 +1,4 @@
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -15,6 +16,7 @@
 #include "include/engine/fwdplus.hpp"
 #include "include/engine/dynamic_rendering.hpp"
 #include "include/engine/image.hpp"
+#include "include/engine/rendering_context.hpp"
 
 #include "include/vulkan/pipeline.hpp"
 #include "include/vulkan/vertex.hpp"
@@ -120,6 +122,9 @@ int main() {
             depth_shader
         )
     );
+    
+    engine::RenderingContext depth_context();
+    engine::RenderingContext rendering_context(VkRect2D {{0, 0}, context.swap_chain.swap_chain_extent});
 
     std::cout << "hello\n";
     
@@ -132,8 +137,6 @@ int main() {
         uint32_t swap_chain_image_index = context.swap_chain.query_next_image(frame->present_semaphore);
         //std::cout << curr_frame << "\n"; //debug purposes
         frame->command_buffer.reset();
-
-        
 
         main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index);
 

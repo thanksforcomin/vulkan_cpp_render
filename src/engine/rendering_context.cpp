@@ -9,6 +9,8 @@ namespace engine {
     rendering_info(vulkan::get_rendering_info(rendering_area, nullptr, nullptr, nullptr, layer_count, color_attachment_count))
   {}
 
+  RenderingContext::RenderingContext(VkRenderingInfo &&info) : rendering_info(std::move(info)) {}
+
   void RenderingContext::set_color_attachment(VkRenderingAttachmentInfoKHR &&attachment) {
     rendering_info.pColorAttachments = &color_attachment.value();
     rendering_info.colorAttachmentCount++;
