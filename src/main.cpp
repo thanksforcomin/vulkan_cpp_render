@@ -133,6 +133,8 @@ int main() {
         //std::cout << curr_frame << "\n"; //debug purposes
         frame->command_buffer.reset();
 
+        
+
         main_render_pass.begin_info.framebuffer = context.swap_chain.query_framebuffer(swap_chain_image_index);
 
         frame->command_buffer.begin();

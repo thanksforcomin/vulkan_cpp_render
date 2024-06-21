@@ -474,6 +474,11 @@ namespace vulkan {
             vmaDestroyBuffer(*buffer.allocator, buffer.buffer, buffer.allocation);
         }
 
+        void deallocate_image(allocated_image &&image) {
+            vmaDestroyImage(*image.allocator, image.image, image.allocation);
+            vmaFreeMemory(*image.allocator, image.allocation);
+        }
+
         void upload_to_buffer(allocated_buffer &buffer, void* data, uint32_t size) {
             void* ptr;
             vmaMapMemory(*buffer.allocator, buffer.allocation, &ptr);
@@ -517,11 +522,29 @@ namespace vulkan {
         };
     }
 
+    VkImageSubresourceRange get_image_subresource_range(VkImageAspectFlags aspect_mask) {
+        return VkImageSubresourceRange {
+            .aspectMask = aspect_mask,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1
+        };
+    }
+
     VkPhysicalDeviceDynamicRenderingFeaturesKHR get_dynamic_rendering_features() {
         return VkPhysicalDeviceDynamicRenderingFeaturesKHR {
             .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR,
             .dynamicRendering = VK_TRUE
         };
+    }
+
+    void begin_rendering() {
+        
+    }
+
+    void end_rendering(VkCommandBuffer &cmd_buffer) {
+        vkCmdEndRendering(cmd_buffer);
     }
 
     VkMemoryBarrier memory_barrier(VkAccessFlags src_access_mask, VkAccessFlags dst_access_mask) {

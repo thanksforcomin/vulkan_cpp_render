@@ -5,7 +5,7 @@ namespace engine {
         context(vulkan_context), 
         layout(image_layout),
         extent(vulkan::extent_2d_to_3d(context->swap_chain.swap_chain_extent)),
-        image(vulkan::allocate_image(
+        image(vulkan::memory::allocate_image(
             context->allocator,
             vulkan::extent_2d_to_3d(context->swap_chain.swap_chain_extent),
             context->swap_chain.swap_chain_image_format,
@@ -25,7 +25,7 @@ namespace engine {
         context(vulkan_context),
         layout(image_layout),
         extent(img_extent),
-        image(vulkan::allocate_image(
+        image(vulkan::memory::allocate_image(
                 context->allocator, 
                 img_extent, 
                 format, 
@@ -63,6 +63,6 @@ namespace engine {
                 vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &memory_barrier);
             }
         );
-        vulkan::deallocate_buffer(std::move(buffer));
+        vulkan::memory::deallocate_buffer(std::move(buffer));
     }
 }

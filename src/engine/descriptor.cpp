@@ -55,9 +55,7 @@ namespace engine {
         context(vulkan_context),
         layout(desc_layout),
         descriptor_set(vulkan::allocate_descriptor_set(context->device.logical, *desc_pool, *layout))
-    {
-
-    }
+    { }
 
     DescriptorSet::~DescriptorSet() { }
 }

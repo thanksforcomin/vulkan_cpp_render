@@ -99,9 +99,9 @@ namespace vulkan {
     }
 
     VkRenderingInfoKHR get_rendering_info(VkRect2D rendering_area, 
-                                          VkRenderingAttachmentInfoKHR *color_attachment, 
-                                          VkRenderingAttachmentInfoKHR *depth_attachment, 
-                                          VkRenderingAttachmentInfoKHR *stencil_attachment,
+                                          VkRenderingAttachmentInfoKHR *color_attachment = nullptr, 
+                                          VkRenderingAttachmentInfoKHR *depth_attachment = nullptr, 
+                                          VkRenderingAttachmentInfoKHR *stencil_attachment = nullptr,
                                           uint32_t layer_count = 1,
                                           uint32_t color_attachment_count = 1);
                                           
@@ -113,9 +113,13 @@ namespace vulkan {
 
     VkPhysicalDeviceDynamicRenderingFeaturesKHR get_dynamic_rendering_features();
 
-    void end_rendering();
+    void begin_rendering(VkCommandBuffer &cmd_buffer, VkRenderingInfoKHR &rendering_info);
+
+    void end_rendering(VkCommandBuffer &cmd_buffer);
 
     void change_image_layout(VkCommandBuffer &cmd_buffer, VkImage &image, VkImageLayout old_layout, VkImageLayout new_layout);
+
+    VkImageSubresourceRange get_image_subresource_range(VkImageAspectFlags aspect_mask = VK_IMAGE_ASPECT_COLOR_BIT);
 
     VkMemoryBarrier memory_barrier(VkAccessFlags src_access_mask = 0, VkAccessFlags dst_access_mask = 0);
 

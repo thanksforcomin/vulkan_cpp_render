@@ -12,8 +12,6 @@
 #include "include/vulkan/vulkan_utils.hpp"
 #include "include/vulkan/vulkan_initializers.hpp"
 
-#include <optional>
-#include <functional>
 #include <vector>
 
 namespace vulkan {
@@ -29,54 +27,6 @@ namespace vulkan {
 
         void update(VkDevice &dev) {
             vkUpdateDescriptorSets(dev, (uint32_t)write_descriptor_sets.size(), &write_descriptor_sets[0], 0, nullptr);
-        }
-    };
-
-    //TODO: we yeeted the renderpass mechanism, delete that shit
-    struct renderpass_builder {
-        std::vector<VkAttachmentDescription> attachments;
-        std::vector<VkAttachmentReference> attachment_references;
-        std::vector<VkSubpassDescription> subpasses;
-        std::vector<VkSubpassDependency> dependencies;
-
-        renderpass_builder push_subpass(VkPipelineBindPoint bind_point) {
-            subpasses.push_back(VkSubpassDescription {
-                    .pipelineBindPoint = bind_point
-                }
-            );
-            return *this;
-        }
-
-        renderpass_builder push_color_attachment(VkFormat format, VkImageLayout fin_layout, VkImageLayout init_layout) {
-            attachments.push_back(vulkan::get_color_attachment(format, fin_layout, init_layout));
-            attachment_references.push_back(VkAttachmentReference {(uint32_t)attachments.size() - 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL});
-            subpasses.back().colorAttachmentCount += 1;
-            subpasses.back().pColorAttachments = &attachment_references.back();
-            return *this;
-        }
-
-        renderpass_builder push_depth_attachment(VkFormat format, VkImageLayout fin_layout, VkImageLayout init_layout) {
-            attachments.push_back(vulkan::get_depth_attachment(format, fin_layout, init_layout));
-            attachment_references.push_back(VkAttachmentReference {(uint32_t)attachments.size() - 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL});
-            subpasses.back().pDepthStencilAttachment = &attachment_references.back();
-            return *this;
-        }
-
-        //TODO: make it make sense
-        renderpass_builder push_resolve_attachment(VkFormat format, VkImageLayout fin_layout, VkImageLayout init_layout) {
-            attachments.push_back(vulkan::get_color_attachment(format, fin_layout, init_layout));
-            attachment_references.push_back(VkAttachmentReference {(uint32_t)attachments.size() - 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL});
-            subpasses.back().pResolveAttachments = &attachment_references.back();
-            return *this;
-        }
-
-        renderpass_builder push_dependency(uint32_t dst_subpass = 0) {
-            dependencies.push_back(vulkan::get_subpass_dependency(dst_subpass));
-            return *this;
-        }
-
-        VkRenderPass create(VkDevice &dev) {
-            return vulkan::create_render_pass(dev, attachments, subpasses, dependencies);
         }
     };
 }
